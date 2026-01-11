@@ -21,6 +21,7 @@ dependencies = [
     "pymupdf>=1.26.7",
     "python-dotenv>=1.2.1",
     "qdrant-client>=1.16.2",
+    "redis>=7.1.0",
     "unstructured-client>=0.42.6",
     "unstructured[all-docs]>=0.18.27",
 ]

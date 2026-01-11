@@ -18,9 +18,16 @@ from langchain_core.documents import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_classic.retrievers import MultiVectorRetriever
 
-import pickle
+import json
 from langchain_classic.storage import LocalFileStore, EncoderBackedStore
 
+import json
+from langchain_qdrant import QdrantVectorStore
+from langchain_community.storage import RedisStore
+from langchain_classic.storage import EncoderBackedStore
+from langchain_classic.retrievers import MultiVectorRetriever
+from langchain_core.documents import Document
+from qdrant_client import QdrantClient, models
 
 
 
@@ -184,10 +191,21 @@ image_summaries = chain.batch(filtered_images, {"max_concurrency": 5})
 
 
 #Qdrant
+# --- 1. Qdrant Setup (Your existing code) ---
 client = QdrantClient(location=QDRANT_URL, api_key=QDRANT_API)
+collection_name = "GrantGPT_multi_modal_RAG_test_1"
 
-collection_name = "GrantGPT_multi_modal_RAG"
+# Check if collection exists to avoid errors on restart
+if not client.collection_exists(collection_name):
+    client.create_collection(
+        collection_name=collection_name,
+        vectors_config=models.VectorParams(
+            size=768, 
+            distance=models.Distance.COSINE
+        ),
+    )
 
+# Note the "metadata." prefix
 nested_fields = ["metadata.discipline", "metadata.publisher", "metadata.grade"]
 
 for field in nested_fields:
@@ -198,42 +216,101 @@ for field in nested_fields:
     )
     print(f"Index created for nested field: '{field}'")
 
-
-# The vectorstore to use to index the child chunks
 vectorstore = QdrantVectorStore(
     client=client,
     collection_name=collection_name,
-    embedding=GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001", api_key=GEMINI_API_KEY, output_dimensionality=768),
+    embedding=GoogleGenerativeAIEmbeddings(
+        model="models/gemini-embedding-001", 
+        api_key=GEMINI_API_KEY,
+        output_dimensionality=768
+    ),
 )
 
-# 1. Create the base local storage (handles raw bytes)
-fs = LocalFileStore("parent_documents_store")
+# --- 2. Redis Storage Setup (Replaces LocalFileStore) ---
 
-# 2. Define how to serialize (Object -> Bytes) and deserialize (Bytes -> Object)
-def pickle_encoder(obj):
-    return pickle.dumps(obj)
+# A. Create the Base Store (Handles raw bytes in Redis)
+# 'namespace' adds a prefix to keys (e.g. "parent_docs:doc_id") so they are organized
+redis_byte_store = RedisStore(
+    redis_url="redis://localhost:6379", 
+    namespace="parent_docs"
+)
 
-def pickle_decoder(data):
-    return pickle.loads(data)
+# B. Define Serializers (Object -> JSON Bytes)
+# JSON is safer and cleaner than pickle for production
+def json_encoder(obj: Document) -> bytes:
+    if hasattr(obj, "to_dict"):
+        return json.dumps(obj.to_dict())
+    # If it's already a string (like your base64 images), just dump it
+    return json.dumps(obj)
 
-# 3. Create the "Smart" store that works with your objects
-# Use THIS 'store' variable in your MultiVectorRetriever
+
+def json_decoder(data: bytes) -> Document:
+    if data is None:
+        return None
+    return json.loads(data)
+
+# C. Create the "Smart" Store
+# This wraps Redis to automatically handle Document objects
 store = EncoderBackedStore(
-    store=fs,
-    key_encoder=lambda x: x, # keys are already strings, so no change needed
-    value_serializer=pickle_encoder,
-    value_deserializer=pickle_decoder
+    store=redis_byte_store,
+    key_encoder=lambda x: x, 
+    value_serializer=json_encoder,
+    value_deserializer=json_decoder
 )
 
-
+# --- 3. The Retriever ---
 id_key = "doc_id"
 
-# The retriever (empty to start)
 retriever = MultiVectorRetriever(
     vectorstore=vectorstore,
-    docstore=store,
+    docstore=store, 
     id_key=id_key,
 )
+
+
+
+
+
+
+
+
+
+
+# # The vectorstore to use to index the child chunks
+# vectorstore = QdrantVectorStore(
+#     client=client,
+#     collection_name=collection_name,
+#     embedding=GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001", api_key=GEMINI_API_KEY, output_dimensionality=768),
+# )
+
+# # 1. Create the base local storage (handles raw bytes)
+# fs = LocalFileStore("parent_documents_store")
+
+# # 2. Define how to serialize (Object -> Bytes) and deserialize (Bytes -> Object)
+# def pickle_encoder(obj):
+#     return pickle.dumps(obj)
+
+# def pickle_decoder(data):
+#     return pickle.loads(data)
+
+# # 3. Create the "Smart" store that works with your objects
+# # Use THIS 'store' variable in your MultiVectorRetriever
+# store = EncoderBackedStore(
+#     store=fs,
+#     key_encoder=lambda x: x, # keys are already strings, so no change needed
+#     value_serializer=pickle_encoder,
+#     value_deserializer=pickle_decoder
+# )
+
+
+# id_key = "doc_id"
+
+# # The retriever (empty to start)
+# retriever = MultiVectorRetriever(
+#     vectorstore=vectorstore,
+#     docstore=store,
+#     id_key=id_key,
+# )
 
 print("Adding texts to VectorDB")
 #Add texts
