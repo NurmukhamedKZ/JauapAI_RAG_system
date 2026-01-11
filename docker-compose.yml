@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis/redis-stack:latest  # <--- MUST HAVE "/redis-stack"
+    container_name: redis_db
+    ports:
+      - "6379:6379"   # Database port
+      - "8001:8001"   # Website port (Redis Insight)
+    volumes:
+      - ./redis_data:/data
+    environment:
+      - REDIS_ARGS=--appendonly yes
+    restart: always

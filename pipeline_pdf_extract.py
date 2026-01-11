@@ -33,11 +33,11 @@ from qdrant_client import QdrantClient, models
 
 
 output_path = "data/"
-file_path = output_path + 'Kazakhstan_tarihi_7_mektep.pdf'
+file_path = output_path + 'Kazakhstan_tarihi_8_atamura_sample.pdf'
 
-DISCIPLINE = "Kazakstan_tarihi"
-GRADE = "7"
-PUBLISHER = "Mektep"
+DISCIPLINE = "Қазақстан тарихы"
+GRADE = "8"
+PUBLISHER = "Атамұра"
 
 
 load_dotenv()
@@ -170,7 +170,7 @@ table_summaries = summarize_chain.batch(tables_html, {"max_concurrency": 10})
 
 #Summarize images
 prompt_template = """Describe the image in detail in kazakh language. For context,
-                  the image is part of a Kazakh History book for the 6th grade."""
+                  the image is part of a Kazakh History book for the 8th grade."""
 messages = [
     (
         "user",
@@ -193,7 +193,7 @@ image_summaries = chain.batch(filtered_images, {"max_concurrency": 5})
 #Qdrant
 # --- 1. Qdrant Setup (Your existing code) ---
 client = QdrantClient(location=QDRANT_URL, api_key=QDRANT_API)
-collection_name = "GrantGPT_multi_modal_RAG_test_1"
+collection_name = "Redis-Docker_test_1"
 
 # Check if collection exists to avoid errors on restart
 if not client.collection_exists(collection_name):
@@ -270,48 +270,6 @@ retriever = MultiVectorRetriever(
 
 
 
-
-
-
-
-
-
-# # The vectorstore to use to index the child chunks
-# vectorstore = QdrantVectorStore(
-#     client=client,
-#     collection_name=collection_name,
-#     embedding=GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001", api_key=GEMINI_API_KEY, output_dimensionality=768),
-# )
-
-# # 1. Create the base local storage (handles raw bytes)
-# fs = LocalFileStore("parent_documents_store")
-
-# # 2. Define how to serialize (Object -> Bytes) and deserialize (Bytes -> Object)
-# def pickle_encoder(obj):
-#     return pickle.dumps(obj)
-
-# def pickle_decoder(data):
-#     return pickle.loads(data)
-
-# # 3. Create the "Smart" store that works with your objects
-# # Use THIS 'store' variable in your MultiVectorRetriever
-# store = EncoderBackedStore(
-#     store=fs,
-#     key_encoder=lambda x: x, # keys are already strings, so no change needed
-#     value_serializer=pickle_encoder,
-#     value_deserializer=pickle_decoder
-# )
-
-
-# id_key = "doc_id"
-
-# # The retriever (empty to start)
-# retriever = MultiVectorRetriever(
-#     vectorstore=vectorstore,
-#     docstore=store,
-#     id_key=id_key,
-# )
-
 print("Adding texts to VectorDB")
 #Add texts
 doc_ids = [str(uuid.uuid4()) for _ in texts]
@@ -323,7 +281,7 @@ summary_texts = [
             # ADD YOUR METADATA HERE
             "discipline": DISCIPLINE,
             "publisher": PUBLISHER,
-            "grade": PUBLISHER
+            "grade": GRADE
         }
     ) for i, summary in enumerate(text_summaries)
 ]
@@ -367,3 +325,126 @@ retriever.docstore.mset(list(zip(img_ids, filtered_images)))
 print(f"Inserted Text: {len(text_summaries)}")
 print(f"Inserted Tables: {len(table_summaries)}")
 print(f"Inserted Images: {len(image_summaries)}")
+
+
+
+
+
+
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
+from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.prompts import ChatPromptTemplate
+from base64 import b64decode
+
+
+def parse_docs(docs):
+    b64 = []
+    text = []
+    for doc in docs:
+        if isinstance(doc, str): # Images are stored as raw base64 strings
+            b64.append(doc)
+        elif isinstance(doc, dict): # Texts/Tables are stored as JSON dicts
+            text.append(doc)
+    return {"images": b64, "texts": text}
+
+
+def build_prompt(kwargs):
+
+    docs_by_type = kwargs["context"]
+    user_question = kwargs["question"]
+
+    context_text = ""
+    if len(docs_by_type["texts"]) > 0:
+        for text_element in docs_by_type["texts"]:
+            context_text += f"The Discipline: {text_element["metadata"]["discipline"]} \n"
+            context_text += f"The Grade: {text_element["metadata"]["grade"]} \n"
+            context_text += f"The Publisher: {text_element["metadata"]["publisher"]} \n"
+            context_text += f"The Page number: {text_element["metadata"]["page_number"]} \n\n"
+            context_text += text_element["text"] + "\n\n"
+
+    
+    system_instruction = """
+    You are an expert UNT (Unified National Testing) tutor in Kazakhstan, specializing in preparing students for high-stakes exams.
+    Your goal is not just to answer, but to help the student understand the material based strictly on the provided text.
+
+    ### STRICT DATA BOUNDARIES
+    - Answer **ONLY** based on the provided Context.
+    - If the answer is not in the context, explicitly state: "Мәтінде бұл сұрақтың жауабы жоқ" (if Kazakh) or "В тексте нет ответа на этот вопрос" (if Russian). Do not make up information.
+
+    ### RESPONSE FORMAT
+    1. **Direct Answer**: Start with a clear, direct answer to the question.
+    2. **Explanation**: Provide a long sentence explanation citing the context (e.g., "Because the text mentions...").
+    3. **Questions**: Ask 2-3 questions from the context to ensure that students understand the material
+    4. **Source**: Necessarily provide information sources that you used (Book, Grade, Publisher, and Page number)
+
+    ### TONE & STYLE
+    - **Language**: Strictly mirror the user's language (Kazakh or Russian).
+    - **Format**: Use bullet points for readability.
+    """
+
+    # construct prompt with context (including images)
+    prompt_template = f"""
+    Answer the question based only on the following context, which can include text, tables, and the below image.
+    Context: {context_text}
+    Question: {user_question}
+    """
+
+    prompt_content = [{"type": "text", "text": prompt_template}]
+
+    if len(docs_by_type["images"]) > 0:
+        for image in docs_by_type["images"]:
+            prompt_content.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:image/jpeg;base64,{image}"},
+                }
+            )
+
+
+    return ChatPromptTemplate.from_messages(
+        [
+            SystemMessage(content=system_instruction),
+            HumanMessage(content=prompt_content),
+        ]
+    )
+
+
+
+model = ChatGoogleGenerativeAI(model="gemini-3-pro-preview", api_key=GEMINI_API_KEY, temperature=1)
+
+
+chain = (
+    {
+        "context": retriever | RunnableLambda(parse_docs),
+        "question": RunnablePassthrough(),
+    }
+    | RunnableLambda(build_prompt)
+    | model
+    | StrOutputParser()
+)
+
+chain_with_sources = {
+    "context": retriever | RunnableLambda(parse_docs),
+    "question": RunnablePassthrough(),
+} | RunnablePassthrough().assign(
+    response=(
+        RunnableLambda(build_prompt)
+        | model
+        | StrOutputParser()
+    )
+)
+
+
+query = "первая петиция?"
+
+response = chain_with_sources.invoke(
+    query
+)
+
+print("Response:", response['response'])
+
+print("\n\nContext:")
+for text in response['context']['texts']:
+    print(text["text"])
+    print("Page number: ", text["metadata"]["page_number"])
+    print("\n" + "-"*50 + "\n")
