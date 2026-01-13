@@ -78,10 +78,6 @@ for chunk in chunks:
     chunk.metadata.publisher = PUBLISHER
 
 
-elements = chunks[2].metadata.orig_elements
-chunks_images = [el for el in elements if "Image" in str(type(el))]
-
-
 tables = []
 texts = []
 
