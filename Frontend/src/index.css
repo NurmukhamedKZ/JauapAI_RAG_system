@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-hero-1: #0E6B4A;
+    --color-hero-2: #00A67A;
+    --color-hero-3: #7EE3B9;
+    --color-bg-light: #F2FFF6;
+    --color-surface: #FFFFFF;
+    --color-text-dark: #09302A;
+    --color-text-light: #FFFFFF;
+    --color-muted: #7EAFA0;
+    --color-cta: #00B07F;
+    --color-cta-hover: #008D60;
+    --color-accent: #0E6B4A;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
