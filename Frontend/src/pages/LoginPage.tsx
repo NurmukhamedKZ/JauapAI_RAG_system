@@ -1,13 +1,32 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/authService';
 
 const LoginPage = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    // Mock Google OAuth handler
-    const handleGoogleLogin = () => {
-        console.log("Google Login Clicked");
+    const { login } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+            await login({ email, password });
+            navigate('/chat');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Invalid email or password');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -30,6 +49,11 @@ const LoginPage = () => {
                     <p className="mt-2 text-sm text-text-dark/60">
                         Sign in to continue your preparation
                     </p>
+                    {error && (
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-600">{error}</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -39,7 +63,8 @@ const LoginPage = () => {
                         {/* Google Login Button */}
                         <div>
                             <button
-                                onClick={handleGoogleLogin}
+                                type="button"
+                                onClick={() => authService.loginWithGoogle()}
                                 className="w-full flex justify-center items-center gap-3 px-4 py-3 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-medium text-text-dark hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-hero-1 transition-all transform hover:scale-[1.02]"
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -75,7 +100,7 @@ const LoginPage = () => {
                             </div>
                         </div>
 
-                        <form className="space-y-6" action="#" method="POST">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div>
                                 <label htmlFor="email" className="block text-sm font-medium text-text-dark">
                                     Email address
@@ -90,6 +115,8 @@ const LoginPage = () => {
                                         type="email"
                                         autoComplete="email"
                                         required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-hero-1/50 focus:border-hero-1 sm:text-sm transition-all"
                                         placeholder="you@example.com"
                                     />
@@ -110,6 +137,8 @@ const LoginPage = () => {
                                         type={showPassword ? "text" : "password"}
                                         autoComplete="current-password"
                                         required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-hero-1/50 focus:border-hero-1 sm:text-sm transition-all"
                                         placeholder="••••••••"
                                     />
@@ -150,9 +179,10 @@ const LoginPage = () => {
                             <div>
                                 <button
                                     type="submit"
-                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-cta hover:bg-cta-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cta transition-all transform hover:scale-[1.02] shadow-cta/20"
+                                    disabled={loading}
+                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-cta hover:bg-cta-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cta transition-all transform hover:scale-[1.02] shadow-cta/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Sign in
+                                    {loading ? 'Signing in...' : 'Sign in'}
                                 </button>
                             </div>
                         </form>

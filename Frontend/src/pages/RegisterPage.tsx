@@ -1,13 +1,33 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/authService';
 
 const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    // Mock Google OAuth handler
-    const handleGoogleLogin = () => {
-        console.log("Google Signup Clicked");
+    const { register } = useAuth();
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
+
+        try {
+            await register({ email, password, full_name: fullName });
+            navigate('/chat');
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Registration failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -30,6 +50,11 @@ const RegisterPage = () => {
                     <p className="mt-2 text-sm text-text-dark/60">
                         Start your journey to a grant today
                     </p>
+                    {error && (
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-sm text-red-600">{error}</p>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -39,7 +64,8 @@ const RegisterPage = () => {
                         {/* Google Login Button */}
                         <div>
                             <button
-                                onClick={handleGoogleLogin}
+                                type="button"
+                                onClick={() => authService.loginWithGoogle()}
                                 className="w-full flex justify-center items-center gap-3 px-4 py-3 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-medium text-text-dark hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-hero-1 transition-all transform hover:scale-[1.02]"
                             >
                                 <svg className="h-5 w-5" viewBox="0 0 24 24">
@@ -75,7 +101,7 @@ const RegisterPage = () => {
                             </div>
                         </div>
 
-                        <form className="space-y-6" action="#" method="POST">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div>
                                 <label htmlFor="name" className="block text-sm font-medium text-text-dark">
                                     Full Name
@@ -90,6 +116,8 @@ const RegisterPage = () => {
                                         type="text"
                                         autoComplete="name"
                                         required
+                                        value={fullName}
+                                        onChange={(e) => setFullName(e.target.value)}
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-hero-1/50 focus:border-hero-1 sm:text-sm transition-all"
                                         placeholder="John Doe"
                                     />
@@ -110,6 +138,8 @@ const RegisterPage = () => {
                                         type="email"
                                         autoComplete="email"
                                         required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         className="block w-full pl-10 pr-3 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-hero-1/50 focus:border-hero-1 sm:text-sm transition-all"
                                         placeholder="you@example.com"
                                     />
@@ -130,6 +160,8 @@ const RegisterPage = () => {
                                         type={showPassword ? "text" : "password"}
                                         autoComplete="new-password"
                                         required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
                                         className="block w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl leading-5 bg-gray-50 placeholder-gray-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-hero-1/50 focus:border-hero-1 sm:text-sm transition-all"
                                         placeholder="••••••••"
                                     />
@@ -170,9 +202,10 @@ const RegisterPage = () => {
                             <div>
                                 <button
                                     type="submit"
-                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-cta hover:bg-cta-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cta transition-all transform hover:scale-[1.02] shadow-cta/20"
+                                    disabled={loading}
+                                    className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-cta hover:bg-cta-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cta transition-all transform hover:scale-[1.02] shadow-cta/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Create Account
+                                    {loading ? 'Creating Account...' : 'Create Account'}
                                 </button>
                             </div>
                         </form>

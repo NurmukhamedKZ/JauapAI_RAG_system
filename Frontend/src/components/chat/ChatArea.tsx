@@ -1,12 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Send, Paperclip, Bot, User } from 'lucide-react';
+import { chatService } from '../../services/chatService';
 
 const ChatArea = () => {
+    const location = useLocation();
     const [messages, setMessages] = useState([
         { role: 'ai', content: 'Hello! I am JauapAI. Choose a subject and grade above, and ask me anything about UNT preparation.' },
     ]);
     const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const initialMessageProcessed = useRef(false);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -16,19 +21,69 @@ const ChatArea = () => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSend = () => {
-        if (!input.trim()) return;
+    // Handle initial message from Hero demo
+    useEffect(() => {
+        const initialMessage = (location.state as any)?.initialMessage;
+        if (initialMessage && !initialMessageProcessed.current) {
+            initialMessageProcessed.current = true;
+            setInput(initialMessage);
+            // Auto-send the message
+            setTimeout(() => {
+                handleSend(initialMessage);
+            }, 500);
+        }
+    }, [location.state]);
+
+    const handleSend = async (messageToSend?: string) => {
+        const messageContent = messageToSend || input;
+        if (!messageContent.trim() || isLoading) return;
 
         // Add User Message
-        const userMsg = { role: 'user', content: input };
+        const userMsg = { role: 'user', content: messageContent };
         setMessages(prev => [...prev, userMsg]);
         setInput('');
+        setIsLoading(true);
 
-        // Simulate AI Response (Mock)
-        setTimeout(() => {
-            const aiMsg = { role: 'ai', content: 'This is a simulated response. In the real app, this will connect to Gemini 3 Flash/Pro.' };
-            setMessages(prev => [...prev, aiMsg]);
-        }, 1000);
+        // Add placeholder for AI response
+        const aiMsgIndex = messages.length + 1;
+        setMessages(prev => [...prev, { role: 'ai', content: '' }]);
+
+        try {
+            // Use streaming chat service
+            await chatService.streamMessage(
+                {
+                    message: messageContent,
+                    filters: {
+                        // You can add filters from UI state here
+                        // discipline: selectedDiscipline,
+                        // grade: selectedGrade,
+                    },
+                },
+                (chunk) => {
+                    // Update the AI message with streaming chunks
+                    setMessages(prev => {
+                        const newMessages = [...prev];
+                        newMessages[aiMsgIndex] = {
+                            role: 'ai',
+                            content: newMessages[aiMsgIndex].content + chunk,
+                        };
+                        return newMessages;
+                    });
+                }
+            );
+        } catch (error) {
+            console.error('Error sending message:', error);
+            setMessages(prev => {
+                const newMessages = [...prev];
+                newMessages[aiMsgIndex] = {
+                    role: 'ai',
+                    content: 'Кешіріңіз, қате пайда болды. Қайталап көріңіз. (Sorry, an error occurred. Please try again.)',
+                };
+                return newMessages;
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -42,16 +97,16 @@ const ChatArea = () => {
                     >
                         {/* Avatar */}
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${msg.role === 'ai'
-                                ? 'bg-hero-1 text-white'
-                                : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                            ? 'bg-hero-1 text-white'
+                            : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                             }`}>
                             {msg.role === 'ai' ? <Bot className="w-5 h-5" /> : <User className="w-5 h-5" />}
                         </div>
 
                         {/* Bubble */}
                         <div className={`max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-3.5 shadow-sm text-sm leading-relaxed ${msg.role === 'ai'
-                                ? 'bg-white dark:bg-gray-900 text-text-dark dark:text-gray-200 border border-gray-100 dark:border-gray-800 rounded-tl-none'
-                                : 'bg-hero-1 text-white rounded-tr-none'
+                            ? 'bg-white dark:bg-gray-900 text-text-dark dark:text-gray-200 border border-gray-100 dark:border-gray-800 rounded-tl-none'
+                            : 'bg-hero-1 text-white rounded-tr-none'
                             }`}>
                             {msg.content}
                         </div>
@@ -83,11 +138,15 @@ const ChatArea = () => {
                     />
 
                     <button
-                        onClick={handleSend}
-                        disabled={!input.trim()}
+                        onClick={() => handleSend()}
+                        disabled={!input.trim() || isLoading}
                         className="absolute right-3 bottom-2.5 p-2 bg-hero-1 text-white rounded-xl hover:bg-hero-1/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        <Send className="w-5 h-5" />
+                        {isLoading ? (
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                            <Send className="w-5 h-5" />
+                        )}
                     </button>
                 </div>
                 <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-2">

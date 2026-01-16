@@ -1,12 +1,14 @@
 
 
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 
 import { useLanguage } from '../context/LanguageContext';
 
 const CTASection = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     return (
         <section className="py-24 bg-bg-light relative overflow-hidden">
             {/* Background decoration */}
@@ -36,7 +38,7 @@ const CTASection = () => {
                             {t('cta.subtitle')}
                         </p>
 
-                        <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" onSubmit={(e) => e.preventDefault()}>
+                        <form className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto" onSubmit={(e) => { e.preventDefault(); navigate('/register'); }}>
                             <input
                                 type="email"
                                 placeholder={t('cta.placeholder')}

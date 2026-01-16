@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -7,6 +8,7 @@ import LanguageSwitcher from './LanguageSwitcher';
 
 const Header = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -58,7 +60,10 @@ const Header = () => {
                     <div className="hidden md:flex items-center gap-4 z-20">
                         <LanguageSwitcher />
 
-                        <button className="bg-cta text-white h-11 w-[230px] rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20 flex items-center justify-center">
+                        <button
+                            onClick={() => navigate('/register')}
+                            className="bg-cta text-white h-11 w-[230px] rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20 flex items-center justify-center"
+                        >
                             {t('header.cta')}
                         </button>
                     </div>
@@ -92,7 +97,10 @@ const Header = () => {
                             <a href="#about" className="block py-2 text-text-dark hover:text-accent font-medium bg-gray-50 px-3 rounded-lg" onClick={() => setIsMobileMenuOpen(false)}>{t('header.about')}</a>
 
                             <div className="pt-2">
-                                <button className="w-full bg-cta text-white px-5 py-3 rounded-xl font-semibold hover:bg-cta-hover transition-colors shadow-lg shadow-cta/20">
+                                <button
+                                    onClick={() => navigate('/register')}
+                                    className="w-full bg-cta text-white px-5 py-3 rounded-xl font-semibold hover:bg-cta-hover transition-colors shadow-lg shadow-cta/20"
+                                >
                                     {t('header.cta')}
                                 </button>
                             </div>

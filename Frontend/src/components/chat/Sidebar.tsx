@@ -1,12 +1,15 @@
-import { Plus, MessageSquare, MoreHorizontal, Settings, LogOut, Search } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Plus, MessageSquare, Settings, Search } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface SidebarProps {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
+    onOpenSettings: () => void;
 }
 
-const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
+const Sidebar = ({ isOpen, setIsOpen, onOpenSettings }: SidebarProps) => {
+    const { user } = useAuth();
+
     return (
         <aside
             className={`fixed lg:static inset-y-0 left-0 z-40 w-72 bg-bg-light dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
@@ -65,16 +68,19 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
 
                 {/* User Profile */}
                 <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-                    <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors group">
+                    <div
+                        onClick={onOpenSettings}
+                        className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors group"
+                    >
                         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-hero-1 to-hero-2 flex items-center justify-center text-white font-bold">
-                            N
+                            {user?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || 'U'}
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-text-dark dark:text-white truncate">
-                                Nurmukhamed
+                                {user?.full_name || user?.email?.split('@')[0] || 'User'}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                                Pro Plan
+                                {user?.subscription_tier === 'pro' ? 'Pro Plan' : 'Free Plan'}
                             </p>
                         </div>
                         <Settings className="w-5 h-5 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
@@ -86,3 +92,4 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
 };
 
 export default Sidebar;
+

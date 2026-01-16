@@ -1,10 +1,19 @@
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, MessageSquare, BrainCircuit } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Hero = () => {
     const { t } = useLanguage();
+    const navigate = useNavigate();
+    const [demoInput, setDemoInput] = useState('');
+
+    const handleDemoSubmit = () => {
+        if (!demoInput.trim()) return;
+        navigate('/chat', { state: { initialMessage: demoInput } });
+    };
 
 
     return (
@@ -50,10 +59,10 @@ const Hero = () => {
                         transition={{ duration: 0.5, delay: 0.4 }}
                         className="flex flex-col sm:flex-row gap-4"
                     >
-                        <button className="bg-cta hover:bg-cta-hover text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cta/30 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                        <button onClick={() => navigate('/register')} className="bg-cta hover:bg-cta-hover text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cta/30 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
                             {t('hero.cta_primary')} <ArrowRight className="w-5 h-5" />
                         </button>
-                        <button className="bg-white hover:bg-gray-50 text-text-dark border border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg shadow-sm transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                        <button onClick={() => navigate('/chat')} className="bg-white hover:bg-gray-50 text-text-dark border border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg shadow-sm transition-all transform hover:scale-105 flex items-center justify-center gap-2">
                             <MessageSquare className="w-5 h-5 text-cta" /> {t('hero.cta_secondary')}
                         </button>
                     </motion.div>
@@ -111,10 +120,22 @@ const Hero = () => {
                         <div className="relative">
                             <input
                                 type="text"
+                                value={demoInput}
+                                onChange={(e) => setDemoInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleDemoSubmit();
+                                    }
+                                }}
                                 placeholder={t('hero.input_placeholder')}
                                 className="w-full bg-white border border-gray-200 rounded-xl px-4 py-4 pr-12 text-sm focus:outline-none focus:ring-2 focus:ring-hero-2/50 transition-all shadow-sm"
                             />
-                            <button className="absolute right-2 top-2 p-2 bg-hero-1 text-white rounded-lg hover:bg-hero-1/90 transition-colors">
+                            <button
+                                onClick={handleDemoSubmit}
+                                disabled={!demoInput.trim()}
+                                className="absolute right-2 top-2 p-2 bg-hero-1 text-white rounded-lg hover:bg-hero-1/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                         </div>
