@@ -1,12 +1,10 @@
 
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight, MessageSquare, BrainCircuit } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Hero = () => {
     const { t } = useLanguage();
-    const { scrollY } = useScroll();
-    const y1 = useTransform(scrollY, [0, 500], [0, 200]);
 
 
     return (
@@ -72,7 +70,6 @@ const Hero = () => {
 
                 {/* Right Content - Interactive Mock */}
                 <motion.div
-                    style={{ y: y1 }}
                     className="relative hidden lg:block"
                 >
                     {/* Abstract Decorative elements behind */}

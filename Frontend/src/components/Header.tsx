@@ -30,38 +30,41 @@ const Header = () => {
                 }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center">
+                <div className="relative flex justify-between items-center h-20">
                     {/* Logo */}
-                    <div className={`flex items-center transition-all duration-300 ${isScrolled ? 'scale-90' : 'scale-100'}`}>
+                    <div className={`flex items-center transition-all duration-300 flex-shrink-0 z-20 ${isScrolled ? 'scale-90' : 'scale-100'}`}>
                         <span className="text-2xl font-bold bg-gradient-to-r from-hero-1 to-hero-2 bg-clip-text text-transparent">
                             JauapAI
                         </span>
                     </div>
 
-                    {/* Desktop Nav */}
-                    <nav className="hidden md:flex items-center space-x-8">
-                        <a href="#advantages" className="text-text-dark hover:text-accent transition-colors font-medium text-sm">
+                    {/* Centered Desktop Nav */}
+                    <nav className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center space-x-8">
+                        <a href="#advantages" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
                             {t('header.advantages')}
                         </a>
-                        <a href="#features" className="text-text-dark hover:text-accent transition-colors font-medium text-sm">
+                        <a href="#features" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
                             {t('header.features')}
                         </a>
-                        <a href="#benchmarks" className="text-text-dark hover:text-accent transition-colors font-medium text-sm">
+                        <a href="#benchmarks" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
                             {t('header.pricing')}
                         </a>
-                        <a href="#about" className="text-text-dark hover:text-accent transition-colors font-medium text-sm">
+                        <a href="#about" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
                             {t('header.about')}
                         </a>
-
-                        <LanguageSwitcher />
-
-                        <button className="bg-cta text-white px-5 py-2 rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20">
-                            {t('header.cta')}
-                        </button>
                     </nav>
 
-                    {/* Mobile Menu Button + Switcher for mobile */}
-                    <div className="md:hidden flex items-center gap-4">
+                    {/* Right Actions (Desktop) */}
+                    <div className="hidden md:flex items-center gap-4 z-20">
+                        <LanguageSwitcher />
+
+                        <button className="bg-cta text-white h-11 w-[230px] rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20 flex items-center justify-center">
+                            {t('header.cta')}
+                        </button>
+                    </div>
+
+                    {/* Mobile Actions */}
+                    <div className="md:hidden flex items-center gap-4 z-20">
                         <LanguageSwitcher />
                         <button
                             className="text-text-dark"

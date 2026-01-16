@@ -12,12 +12,12 @@ from langchain_voyageai import VoyageAIEmbeddings
 
 # !!! Configuration Constants !!!
 DISCIPLINE = "Қазақстан тарихы"
-GRADE = "9 сынып"
-PUBLISHER = "Мектеп"
+GRADE = "11 сынып"
+PUBLISHER = "Атамұра"
 
 collection_name = "JauapAI"
 
-file_path = "data/kazakhstan_tarihi_9_mektep.pdf"
+file_path = "data/kazakhstan_tarihi_11_atamura_2.pdf"
 CHUNKS_DIR = "data/temp_chunks"
 
 BATCH_SIZE = 2  # Number of pages per batch

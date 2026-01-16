@@ -1,31 +1,22 @@
 
-
-import Header from './components/Header';
-import Hero from './components/Hero';
-import FeatureCards from './components/FeatureCards';
-import CoreFeatures from './components/CoreFeatures';
-import Benchmarks from './components/Benchmarks';
-
-import CTASection from './components/CTASection';
-import Footer from './components/Footer';
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
+import LandingPage from './pages/LandingPage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ChatPage from './pages/ChatPage';
 
 function App() {
   return (
     <LanguageProvider>
-      <div className="bg-bg-light min-h-screen font-sans selection:bg-hero-1/20 selection:text-text-dark">
-        <Header />
-        <main>
-          <Hero />
-          <FeatureCards />
-          <CoreFeatures />
-          <Benchmarks />
-
-          <CTASection />
-        </main>
-        <Footer />
-      </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/chat" element={<ChatPage />} />
+        </Routes>
+      </Router>
     </LanguageProvider>
   );
 }
