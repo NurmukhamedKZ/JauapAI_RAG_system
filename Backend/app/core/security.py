@@ -1,47 +1,82 @@
+from datetime import datetime, timedelta
+from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
-from Backend.app.core.config import settings
+from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
+from Backend.app.core.config import settings
+from Backend.app.db.database import get_db
+from Backend.app.models.user import User
+
+# Password hashing
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+# Security scheme
 security = HTTPBearer()
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """
-    Verifies the JWT token from Supabase by decoding it locally.
-    Returns the user data from the token payload.
-    """
-    token = credentials.credentials
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """Verify a password against its hash."""
+    return pwd_context.verify(plain_password, hashed_password)
+
+def hash_password(password: str) -> str:
+    """Hash a password."""
+    return pwd_context.hash(password)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
+    """Create a JWT access token."""
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+    return encoded_jwt
+
+def decode_token(token: str) -> dict:
+    """Decode and verify a JWT token."""
     try:
-        # Decode JWT using Supabase JWT secret
-        # Get the secret from SUPABASE_KEY (anon key contains the JWT secret)
-        # For Supabase, we decode without verification in development,
-        # but in production you should use the JWT_SECRET from Supabase settings
-        payload = jwt.decode(
-            token,
-            settings.SUPABASE_KEY,  # This is the anon key which serves as the JWT secret
-            algorithms=["HS256"],
-            options={"verify_signature": False}  # Disable signature verification for compatibility
-        )
-        
-        # Extract user info from the payload
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token: missing user ID",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-        
-        # Return user info from token
-        return {
-            "id": user_id,
-            "email": payload.get("email"),
-            "user_metadata": payload.get("user_metadata", {}),
-        }
-    except JWTError as e:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return payload
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Could not validate credentials: {str(e)}",
+            detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+) -> User:
+    """
+    Get the current authenticated user from JWT token.
+    """
+    token = credentials.credentials
+    payload = decode_token(token)
+    
+    user_id: str = payload.get("sub")
+    if user_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token: missing user ID",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User account is deactivated"
+        )
+    
+    return user

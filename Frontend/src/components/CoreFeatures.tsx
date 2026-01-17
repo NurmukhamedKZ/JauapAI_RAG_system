@@ -31,7 +31,12 @@ const CoreFeatures = () => {
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-                    {t('core.items').map((item: any, idx: number) => {
+
+                    {[
+                        { title: 'core.item1.title', desc: 'core.item1.desc' },
+                        { title: 'core.item2.title', desc: 'core.item2.desc' },
+                        { title: 'core.item3.title', desc: 'core.item3.desc' }
+                    ].map((item, idx) => {
                         const icons = [Zap, Shield, Globe];
                         const Icon = icons[idx];
 
@@ -47,13 +52,14 @@ const CoreFeatures = () => {
                                 <div className="w-16 h-16 mx-auto bg-gradient-to-br from-hero-1/10 to-hero-2/20 rounded-2xl flex items-center justify-center mb-6 text-hero-1">
                                     <Icon className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-text-dark mb-3">{item.title}</h3>
+                                <h3 className="text-2xl font-bold text-text-dark mb-3">{t(item.title)}</h3>
                                 <p className="text-muted leading-relaxed">
-                                    {item.desc}
+                                    {t(item.desc)}
                                 </p>
                             </motion.div>
                         )
                     })}
+
                 </div>
             </div>
         </section>

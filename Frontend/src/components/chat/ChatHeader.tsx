@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Sun, Moon, Zap, Brain, ChevronDown, Filter } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Sun, Moon, PanelLeftClose, PanelLeft } from 'lucide-react';
 
 interface ChatHeaderProps {
     isSidebarOpen: boolean;
@@ -9,12 +10,6 @@ interface ChatHeaderProps {
 const ChatHeader = ({ isSidebarOpen, setIsSidebarOpen }: ChatHeaderProps) => {
     // Theme Toggle State
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
-
-    // Filters State
-    const [model, setModel] = useState<'flash' | 'pro'>('flash');
-    const [discipline, setDiscipline] = useState('History');
-    const [grade, setGrade] = useState('11');
-    const [publisher, setPublisher] = useState('Atamur');
 
     useEffect(() => {
         if (theme === 'dark') {
@@ -31,68 +26,30 @@ const ChatHeader = ({ isSidebarOpen, setIsSidebarOpen }: ChatHeaderProps) => {
 
     return (
         <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 lg:px-6 z-30 transition-colors duration-300">
-            {/* Left: Mobile Menu & Model Selector */}
-            <div className="flex items-center gap-4">
+            {/* Left: Sidebar Toggle + Logo */}
+            <div className="flex items-center gap-3">
+                {/* Sidebar Toggle Button */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="lg:hidden p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg"
+                    className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 hover:scale-105"
+                    title={isSidebarOpen ? 'Сайдбарды жабу' : 'Сайдбарды ашу'}
                 >
-                    <Filter className="w-5 h-5" />
+                    <div className="transition-transform duration-300" style={{ transform: isSidebarOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}>
+                        {isSidebarOpen ? (
+                            <PanelLeftClose className="w-5 h-5" />
+                        ) : (
+                            <PanelLeft className="w-5 h-5" />
+                        )}
+                    </div>
                 </button>
 
-                {/* Model Selector */}
-                <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
-                    <button
-                        onClick={() => setModel('flash')}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${model === 'flash'
-                                ? 'bg-white dark:bg-gray-700 text-hero-1 shadow-sm'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
-                            }`}
-                    >
-                        <Zap className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Flash</span>
-                    </button>
-                    <button
-                        onClick={() => setModel('pro')}
-                        className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${model === 'pro'
-                                ? 'bg-white dark:bg-gray-700 text-purple-600 shadow-sm'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'
-                            }`}
-                    >
-                        <Brain className="w-3.5 h-3.5" />
-                        <span className="hidden sm:inline">Pro</span>
-                    </button>
-                </div>
-            </div>
-
-            {/* Middle: Filters (Hidden on small mobile, visible on desktop/tablet) */}
-            <div className="hidden md:flex items-center gap-3">
-                <select
-                    value={discipline}
-                    onChange={(e) => setDiscipline(e.target.value)}
-                    className="bg-transparent text-sm font-medium text-text-dark dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-hero-1/50"
+                {/* Logo - Clickable, redirects to landing */}
+                <Link
+                    to="/"
+                    className="text-xl font-bold bg-gradient-to-r from-hero-1 to-hero-2 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
                 >
-                    <option>History of Kazakhstan</option>
-                    <option>Geography</option>
-                    <option>Math Literacy</option>
-                </select>
-
-                <select
-                    value={grade}
-                    onChange={(e) => setGrade(e.target.value)}
-                    className="bg-transparent text-sm font-medium text-text-dark dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-hero-1/50"
-                >
-                    {[6, 7, 8, 9, 10, 11].map(g => <option key={g} value={g}>Grade {g}</option>)}
-                </select>
-
-                <select
-                    value={publisher}
-                    onChange={(e) => setPublisher(e.target.value)}
-                    className="bg-transparent text-sm font-medium text-text-dark dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-hero-1/50"
-                >
-                    <option>Atamur</option>
-                    <option>Mektep</option>
-                </select>
+                    JauapAI
+                </Link>
             </div>
 
             {/* Right: Theme Toggle */}

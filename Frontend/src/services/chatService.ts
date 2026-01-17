@@ -1,4 +1,4 @@
-import { api } from './api';
+import { getToken } from './api';
 
 export interface ChatMessage {
     role: 'user' | 'assistant';
@@ -21,20 +21,16 @@ export interface ChatResponse {
     };
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 // Chat service to communicate with backend
 export const chatService = {
-    // Send a message to the chat API
-    sendMessage: async (request: ChatRequest): Promise<ChatResponse> => {
-        return api.post<ChatResponse>('/chat', request, true);
-    },
-
-    // Stream a message (if backend supports streaming)
+    // Stream a message
     streamMessage: async (
         request: ChatRequest,
         onChunk: (chunk: string) => void
     ): Promise<void> => {
-        const token = await (await import('./api')).getToken();
-        const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+        const token = getToken();
 
         const response = await fetch(`${API_BASE_URL}/chat`, {
             method: 'POST',
@@ -46,7 +42,8 @@ export const chatService = {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+            throw new Error(error.detail || `HTTP error! status: ${response.status}`);
         }
 
         const reader = response.body?.getReader();

@@ -61,10 +61,16 @@ const Header = () => {
                         <LanguageSwitcher />
 
                         <button
-                            onClick={() => navigate('/register')}
-                            className="bg-cta text-white h-11 w-[230px] rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20 flex items-center justify-center"
+                            onClick={() => navigate('/login')}
+                            className="text-text-dark hover:text-hero-1 font-medium transition-colors px-4 py-2"
                         >
-                            {t('header.cta')}
+                            {t('loginBtn')}
+                        </button>
+                        <button
+                            onClick={() => navigate('/register')}
+                            className="bg-cta text-white px-6 py-2.5 rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20 flex items-center justify-center"
+                        >
+                            {t('registerBtn')}
                         </button>
                     </div>
 
@@ -98,10 +104,16 @@ const Header = () => {
 
                             <div className="pt-2">
                                 <button
+                                    onClick={() => navigate('/login')}
+                                    className="w-full text-text-dark font-medium py-3 hover:text-hero-1 transition-colors mb-2 border border-gray-200 rounded-xl"
+                                >
+                                    {t('loginBtn')}
+                                </button>
+                                <button
                                     onClick={() => navigate('/register')}
                                     className="w-full bg-cta text-white px-5 py-3 rounded-xl font-semibold hover:bg-cta-hover transition-colors shadow-lg shadow-cta/20"
                                 >
-                                    {t('header.cta')}
+                                    {t('registerBtn')}
                                 </button>
                             </div>
                         </div>

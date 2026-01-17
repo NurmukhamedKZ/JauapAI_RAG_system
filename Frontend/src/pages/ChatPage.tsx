@@ -5,8 +5,17 @@ import ChatArea from '../components/chat/ChatArea';
 import SettingsModal from '../components/chat/SettingsModal';
 
 const ChatPage = () => {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+
+    const handleNewChat = () => {
+        setSelectedConversationId(null);
+    };
+
+    const handleConversationCreated = (id: string) => {
+        setSelectedConversationId(id);
+    };
 
     return (
         <div className="flex h-screen overflow-hidden bg-bg-light dark:bg-gray-950 font-sans">
@@ -15,13 +24,19 @@ const ChatPage = () => {
                 isOpen={isSidebarOpen}
                 setIsOpen={setIsSidebarOpen}
                 onOpenSettings={() => setIsSettingsOpen(true)}
+                selectedConversationId={selectedConversationId}
+                onSelectConversation={setSelectedConversationId}
+                onNewChat={handleNewChat}
             />
 
             {/* Main Content */}
-            <div className="flex-1 flex flex-col min-w-0 transition-all duration-300">
+            <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${isSidebarOpen ? 'ml-72' : 'ml-0'}`}>
                 <ChatHeader isSidebarOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
                 <main className="flex-1 relative overflow-hidden">
-                    <ChatArea />
+                    <ChatArea
+                        conversationId={selectedConversationId}
+                        onConversationCreated={handleConversationCreated}
+                    />
 
                     {/* Overlay for mobile when sidebar is open */}
                     {isSidebarOpen && (

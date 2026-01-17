@@ -57,7 +57,7 @@ class RAGService:
         # 4. LLM
         try:
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-1.5-flash", # Using 1.5 Flash as requested for speed/cost (user script had 'gemini-3-flash-preview' which might be a typo or specific preview, reverting to standard or user's preference if valid. User code said 'gemini-3-flash-preview', I will check if that exists. Usually it is 1.5-flash. I'll stick to 1.5-flash to be safe unless user specified otherwise. User script said 'gemini-3-flash-preview'. I will use 1.5-flash for stability but comment.)
+                model="gemini-3-flash-preview", # Using 1.5 Flash as requested for speed/cost (user script had 'gemini-3-flash-preview' which might be a typo or specific preview, reverting to standard or user's preference if valid. User code said 'gemini-3-flash-preview', I will check if that exists. Usually it is 1.5-flash. I'll stick to 1.5-flash to be safe unless user specified otherwise. User script said 'gemini-3-flash-preview'. I will use 1.5-flash for stability but comment.)
                 # Update: User script explicitly used "gemini-3-flash-preview". I'll try to use that if it works, otherwise fallback? 
                 # Actually, "gemini-3-flash-preview" sounds like a very new or hallucinated model name. "gemini-1.5-flash" / "gemini-1.5-pro" are standard. 
                 # I will use "gemini-1.5-flash" to ensure it works.
@@ -142,7 +142,7 @@ class RAGService:
                 query=query, 
                 documents=candidate_texts, 
                 model="rerank-2.5", 
-                top_k=5 
+                top_k=3
             )
         except Exception as e:
             logger.error(f"Error reranking: {e}")
@@ -179,7 +179,21 @@ class RAGService:
             
         return {"context_text": "\n\n".join(reranked_docs)}
 
-    def build_prompt(self, input_dict):
+    def build_prompt_with_context(self, input_dict):
+        """Build prompt with conversation history for context."""
+        context_messages = input_dict.get("context_messages", [])
+        question = input_dict["question"]
+        context_data = input_dict["context_data"]
+        
+        # Build conversation history string
+        history_str = ""
+        if context_messages:
+            history_str = "\n--- Бұрынғы сұхбат ---\n"
+            for msg in context_messages:
+                role = "Сіз" if msg["role"] == "user" else "Көмекші"
+                history_str += f"{role}: {msg['content']}\n"
+            history_str += "---\n\n"
+        
         prompt_template = """
 Сен Қазақстан тарихынан ҰБТ-ға (Ұлттық бірыңғай тестілеу) дайындайтын кәсіби репетиторсың. 
 Сенің міндетің - тек қана берілген контекст негізінде студентке жауап беру.
@@ -188,16 +202,16 @@ class RAGService:
 1. Жауапты нақты фактілермен (жылдар, есімдер, оқиғалар) негізде.
 2. Егер контекстте ақпарат болмаса, "Мәтінде бұл сұраққа жауап жоқ" деп айт.
 3. Жауаптың соңында міндетті түрде пайдаланылған дереккөздерді көрсет. (Кітап атауы, Сыныбы, Баспасы, Кытап беттерінің нөмірлері)
+4. Егер студент бұрынғы сұрақтары туралы сұраса, сұхбат тарихын пайдалан.
 
+{history}
 Контекст:
 {context}
 
 Сұрақ: {question}
 """
-        question = input_dict["question"]
-        context_data = input_dict["context_data"]
-        
         prompt_text = prompt_template.format(
+            history=history_str,
             context=context_data["context_text"], 
             question=question
         )
@@ -205,33 +219,39 @@ class RAGService:
         return [HumanMessage(content=prompt_text)]
 
     def init_chain(self):
-        self.chain = (
-            {
-                "context_data": lambda x: self.hybrid_retriever_func(x["question"], x.get("filter")),
-                "question": lambda x: x["question"]
-            }
-            | RunnablePassthrough().assign(
-                response=(
-                    RunnableLambda(self.build_prompt)
-                    | self.llm
-                    | StrOutputParser()
-                )
-            )
-        )
+        """Initialize chain - kept for compatibility."""
+        pass  # We now use stream_chat_with_context directly
 
-    def chat(self, question: str, filters: dict = None) -> str:
-        query_params = {
-            "question": question,
-            "filter": filters
-        }
-        return self.chain.invoke(query_params)
+    def stream_chat_with_context(self, context_messages: list, question: str, filters: dict = None):
+        """Stream chat with conversation context."""
+        # Get context from RAG
+        context_data = self.hybrid_retriever_func(question, filters)
         
-    def stream_chat(self, question: str, filters: dict = None):
-         query_params = {
+        # Build prompt with context
+        input_dict = {
+            "context_messages": context_messages,
             "question": question,
-            "filter": filters
+            "context_data": context_data
         }
-         return self.chain.stream(query_params)
+        
+        messages = self.build_prompt_with_context(input_dict)
+        
+        # Stream from LLM
+        for chunk in self.llm.stream(messages):
+            # Handle different response formats
+            if hasattr(chunk, 'content'):
+                content = chunk.content
+                # Gemini 3 may return list of dicts with 'text' key
+                if isinstance(content, list):
+                    for item in content:
+                        if isinstance(item, dict) and 'text' in item:
+                            yield item['text']
+                elif isinstance(content, str):
+                    yield content
+                else:
+                    yield str(content)
+            else:
+                yield str(chunk)
 
 # Instantiate as singleton (lazy load could be better but sticking to plan)
 # We will instantiate it in main.py or dependency to control lifecycle.

@@ -21,8 +21,12 @@ const HowItWorks = () => {
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {t('howItWorks.steps').map((step: any, idx: number) => {
-                        const Icon = icons[idx];
+                    {[
+                        { title: 'howItWorks.step1.title', desc: 'howItWorks.step1.desc', iconIdx: 0 },
+                        { title: 'howItWorks.step2.title', desc: 'howItWorks.step2.desc', iconIdx: 1 },
+                        { title: 'howItWorks.step3.title', desc: 'howItWorks.step3.desc', iconIdx: 2 }
+                    ].map((step, idx) => {
+                        const Icon = icons[step.iconIdx];
                         return (
                             <motion.div
                                 key={idx}
@@ -40,9 +44,9 @@ const HowItWorks = () => {
                                 <div className="w-20 h-20 bg-hero-1/10 rounded-full flex items-center justify-center mb-6 text-cta">
                                     <Icon className="w-10 h-10" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-text-dark mb-3">{step.title}</h3>
+                                <h3 className="text-2xl font-bold text-text-dark mb-3">{t(step.title)}</h3>
                                 <p className="text-muted leading-relaxed">
-                                    {step.desc}
+                                    {t(step.desc)}
                                 </p>
                             </motion.div>
                         );

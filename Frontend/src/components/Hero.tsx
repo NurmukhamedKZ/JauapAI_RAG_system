@@ -59,11 +59,8 @@ const Hero = () => {
                         transition={{ duration: 0.5, delay: 0.4 }}
                         className="flex flex-col sm:flex-row gap-4"
                     >
-                        <button onClick={() => navigate('/register')} className="bg-cta hover:bg-cta-hover text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg shadow-cta/30 transition-all transform hover:scale-105 flex items-center justify-center gap-2">
-                            {t('hero.cta_primary')} <ArrowRight className="w-5 h-5" />
-                        </button>
-                        <button onClick={() => navigate('/chat')} className="bg-white hover:bg-gray-50 text-text-dark border border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg shadow-sm transition-all transform hover:scale-105 flex items-center justify-center gap-2">
-                            <MessageSquare className="w-5 h-5 text-cta" /> {t('hero.cta_secondary')}
+                        <button onClick={() => navigate('/chat')} className="bg-white hover:bg-gray-50 text-cta border-2 border-cta/10 px-10 py-5 rounded-2xl font-bold text-xl shadow-xl shadow-gray-200/50 transition-all transform hover:scale-105 flex items-center justify-center gap-3">
+                            <MessageSquare className="w-6 h-6" /> {t('hero.cta_secondary')}
                         </button>
                     </motion.div>
 
@@ -142,9 +139,14 @@ const Hero = () => {
 
                         {/* Badges */}
                         <div className="mt-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-                            {t('hero.badges').map((tag: string) => (
-                                <span key={tag} className="flex-shrink-0 text-xs font-medium text-hero-1 bg-hero-3/20 px-3 py-1 rounded-full border border-hero-3/30">
-                                    {tag}
+                            {[
+                                'hero.badge.math',
+                                'hero.badge.history',
+                                'hero.badge.physics',
+                                'hero.badge.geography'
+                            ].map((tagKey) => (
+                                <span key={tagKey} className="flex-shrink-0 text-xs font-medium text-hero-1 bg-hero-3/20 px-3 py-1 rounded-full border border-hero-3/30">
+                                    {t(tagKey)}
                                 </span>
                             ))}
                         </div>

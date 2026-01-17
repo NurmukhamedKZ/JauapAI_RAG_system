@@ -1,5 +1,3 @@
-import { supabase } from '../lib/supabase';
-
 // Base API configuration and utilities
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
@@ -17,22 +15,19 @@ const ApiError = class extends Error {
     }
 };
 
-// Get token from Supabase session
-export const getToken = async (): Promise<string | null> => {
-    const { data: { session } } = await supabase.auth.getSession();
-    return session?.access_token || null;
+// Get token from localStorage
+export const getToken = (): string | null => {
+    return localStorage.getItem('access_token');
 };
 
-// Save token (no longer needed with Supabase, but kept for compatibility)
+// Save token to localStorage
 export const saveToken = (token: string): void => {
-    // Tokens are managed by Supabase
-    console.warn('saveToken is deprecated when using Supabase');
+    localStorage.setItem('access_token', token);
 };
 
-// Remove token (no longer needed with Supabase, but kept for compatibility)
+// Remove token from localStorage
 export const removeToken = (): void => {
-    // Tokens are managed by Supabase
-    console.warn('removeToken is deprecated when using Supabase');
+    localStorage.removeItem('access_token');
 };
 
 // Generic fetch wrapper
@@ -49,7 +44,7 @@ async function apiFetch<T>(
 
     // Add authorization header if required
     if (requiresAuth) {
-        const token = await getToken();
+        const token = getToken();
         if (token) {
             requestHeaders['Authorization'] = `Bearer ${token}`;
         }
