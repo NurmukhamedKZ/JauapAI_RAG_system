@@ -63,6 +63,9 @@ const Hero = () => {
                             <MessageSquare className="w-6 h-6" /> {t('hero.cta_secondary')}
                         </button>
                     </motion.div>
+                    <p className="text-sm text-gray-500 font-medium">
+                        {t('hero.no_registration')}
+                    </p>
 
                     <div className="pt-4 flex items-center gap-6 text-sm font-medium text-text-dark/60">
                         <div className="flex items-center gap-2">
@@ -115,6 +118,13 @@ const Hero = () => {
 
                         {/* Input Area */}
                         <div className="relative">
+                            {/* Pulsating Arrow Visual Cue */}
+                            <div className="absolute -top-12 right-10 animate-bounce hidden md:block z-20">
+                                <div className="text-cta font-handwriting text-sm transform rotate-12 bg-white px-2 py-1 rounded shadow-sm border border-gray-100">
+                                    Try it now! 👇
+                                </div>
+                            </div>
+
                             <input
                                 type="text"
                                 value={demoInput}
@@ -137,17 +147,20 @@ const Hero = () => {
                             </button>
                         </div>
 
-                        {/* Badges */}
+                        {/* Chips */}
                         <div className="mt-4 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
                             {[
-                                'hero.badge.math',
-                                'hero.badge.history',
-                                'hero.badge.physics',
-                                'hero.badge.geography'
+                                'hero.chips.math',
+                                'hero.chips.history',
+                                'hero.chips.biology'
                             ].map((tagKey) => (
-                                <span key={tagKey} className="flex-shrink-0 text-xs font-medium text-hero-1 bg-hero-3/20 px-3 py-1 rounded-full border border-hero-3/30">
+                                <button
+                                    key={tagKey}
+                                    onClick={() => navigate('/chat', { state: { initialMessage: t(tagKey) } })}
+                                    className="flex-shrink-0 text-xs font-medium text-hero-1 bg-hero-3/20 px-3 py-2 rounded-full border border-hero-3/30 hover:bg-hero-3/40 transition-colors text-left"
+                                >
                                     {t(tagKey)}
-                                </span>
+                                </button>
                             ))}
                         </div>
                     </div>

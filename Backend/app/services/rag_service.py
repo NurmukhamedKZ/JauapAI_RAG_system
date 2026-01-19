@@ -1,25 +1,47 @@
+"""
+RAG (Retrieval-Augmented Generation) Service.
+Handles hybrid search with dense and sparse vectors, reranking, and LLM generation.
+"""
 import logging
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Generator
 from qdrant_client import QdrantClient, models
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_voyageai import VoyageAIEmbeddings
 import voyageai
 from FlagEmbedding import BGEM3FlagModel
-from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.messages import HumanMessage
 
 from Backend.app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
+
 class RAGService:
-    def __init__(self):
+    """
+    RAG Service for hybrid search and context-aware chat.
+    
+    Uses:
+    - Voyage AI for dense embeddings
+    - BGE-M3 for sparse embeddings
+    - Qdrant for vector storage with RRF fusion
+    - Voyage reranker for precision
+    - Google Gemini for generation
+    """
+    
+    def __init__(self) -> None:
+        """Initialize RAG service with all required models and connections."""
+        self.client: Optional[QdrantClient] = None
+        self.dense_model: Optional[VoyageAIEmbeddings] = None
+        self.sparse_model: Optional[BGEM3FlagModel] = None
+        self.voyage_client: Optional[voyageai.Client] = None
+        self.llm: Optional[ChatGoogleGenerativeAI] = None
+        
         self.connect_qdrant()
         self.init_models()
         self.init_chain()
 
-    def connect_qdrant(self):
+    def connect_qdrant(self) -> None:
+        """Establish connection to Qdrant vector database."""
         try:
             self.client = QdrantClient(url=settings.QDRANT_URL, api_key=settings.QDRANT_API)
             logger.info(f"Connected to Qdrant at {settings.QDRANT_URL}")
@@ -27,20 +49,20 @@ class RAGService:
             logger.error(f"Failed to connect to Qdrant: {e}")
             raise
 
-    def init_models(self):
+    def init_models(self) -> None:
+        """Initialize all ML models required for RAG pipeline."""
         # 1. Voyage Embeddings (Dense)
         try:
             self.dense_model = VoyageAIEmbeddings(
                 voyage_api_key=settings.VOYAGE_API, 
-                model="voyage-3-large",
+                model="voyage-4-lite",
                 output_dimension=1024
             )
         except Exception as e:
             logger.error(f"Failed to load Voyage Dense model: {e}")
             raise
 
-        # 2. BGE M3 (Sparse)
-        # Note: This is heavy to load
+        # 2. BGE M3 (Sparse) - Note: This is heavy to load
         try:
             self.sparse_model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
         except Exception as e:
@@ -54,13 +76,10 @@ class RAGService:
             logger.error(f"Failed to init Voyage Client: {e}")
             raise
 
-        # 4. LLM
+        # 4. LLM - Google Gemini
         try:
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-3-flash-preview", # Using 1.5 Flash as requested for speed/cost (user script had 'gemini-3-flash-preview' which might be a typo or specific preview, reverting to standard or user's preference if valid. User code said 'gemini-3-flash-preview', I will check if that exists. Usually it is 1.5-flash. I'll stick to 1.5-flash to be safe unless user specified otherwise. User script said 'gemini-3-flash-preview'. I will use 1.5-flash for stability but comment.)
-                # Update: User script explicitly used "gemini-3-flash-preview". I'll try to use that if it works, otherwise fallback? 
-                # Actually, "gemini-3-flash-preview" sounds like a very new or hallucinated model name. "gemini-1.5-flash" / "gemini-1.5-pro" are standard. 
-                # I will use "gemini-1.5-flash" to ensure it works.
+                model="gemini-2.0-flash",
                 temperature=1,
                 google_api_key=settings.GEMINI_API_KEY
             )
@@ -68,34 +87,57 @@ class RAGService:
             logger.error(f"Failed to init Gemini: {e}")
             raise
 
-    def sparse_query(self, query: str):
-        # Helper to get sparse vector
-        output = self.sparse_model.encode(query, return_dense=False, return_sparse=True, return_colbert_vecs=False)
-        # output['lexical_weights'] is a dict (or list of dicts if input is list)
-        # BGEM3 encode returns a dict with 'lexical_weights'
+    def sparse_query(self, query: str) -> tuple[List[int], List[float]]:
+        """
+        Generate sparse vector representation using BGE-M3.
         
-        # if input is string, it returns one result.
+        Args:
+            query: The search query text
+            
+        Returns:
+            Tuple of (token indices, token weights)
+        """
+        output = self.sparse_model.encode(
+            query, 
+            return_dense=False, 
+            return_sparse=True, 
+            return_colbert_vecs=False
+        )
+        
         lex_weights = output['lexical_weights']
         
-        # BGE-M3 returns a dictionary of {token_id: weight} or list of such.
-        # Ensure proper handling
+        # Handle list output (batch encoding)
         if isinstance(lex_weights, list):
-             lex_weights = lex_weights[0]
+            lex_weights = lex_weights[0]
              
         keys = [int(k) for k in lex_weights.keys()]
         vals = [float(v) for v in lex_weights.values()]
         return keys, vals
 
-    def hybrid_retriever_func(self, query: str, metadata_filter: dict = None):
+    def hybrid_retriever_func(
+        self, 
+        query: str, 
+        metadata_filter: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
-        Custom function to perform Hybrid Search in Qdrant 
-        and return content
+        Perform hybrid search in Qdrant and return formatted context.
+        
+        Uses RRF (Reciprocal Rank Fusion) to combine dense and sparse results,
+        then reranks with Voyage reranker for precision.
+        
+        Args:
+            query: The search query
+            metadata_filter: Optional filters for discipline, grade, publisher
+            
+        Returns:
+            Dict with 'context_text' containing formatted search results
         """
+        # Build Qdrant filter from metadata
         qdrant_filter = None
         if metadata_filter:
             conditions = []
             for key, value in metadata_filter.items():
-                if value: # Only add if value is not None/Empty
+                if value:  # Only add if value is not None/Empty
                     conditions.append(
                         models.FieldCondition(
                             key=f"metadata.{key}", 
@@ -110,21 +152,18 @@ class RAGService:
         
         # Generate Sparse Vector
         keys, vals = self.sparse_query(query)
-        query_sparse = models.SparseVector(
-            indices=keys,
-            values=vals
-        )
+        query_sparse = models.SparseVector(indices=keys, values=vals)
 
         # Perform Hybrid Search using RRF
         try:
             search_results = self.client.query_points(
                 collection_name=settings.COLLECTION_NAME,
                 prefetch=[
-                    models.Prefetch(query=query_dense, using="voyage-dense", limit=20, filter=qdrant_filter),
-                    models.Prefetch(query=query_sparse, using="bge-sparse", limit=20, filter=qdrant_filter),
+                    models.Prefetch(query=query_dense, using="voyage-dense", limit=30, filter=qdrant_filter),
+                    models.Prefetch(query=query_sparse, using="bge-sparse", limit=30, filter=qdrant_filter),
                 ],
                 query=models.FusionQuery(fusion=models.Fusion.RRF),
-                limit=40,
+                limit=50,
                 with_payload=True
             )
         except Exception as e:
@@ -134,7 +173,7 @@ class RAGService:
         if not search_results.points:
             return {"context_text": "Информация не найдена.", "images": []}
         
-        # --- STEP 2: VOYAGE RERANK 2.5 (Precision) ---
+        # Rerank with Voyage
         candidate_texts = [hit.payload['page_content'] for hit in search_results.points]
         
         try:
@@ -142,11 +181,11 @@ class RAGService:
                 query=query, 
                 documents=candidate_texts, 
                 model="rerank-2.5", 
-                top_k=3
+                top_k=5
             )
         except Exception as e:
             logger.error(f"Error reranking: {e}")
-            # Fallback to top 5 from initial search if rerank fails
+            # Fallback to top 5 from initial search
             reranked_docs_fallback = []
             for hit in search_results.points[:5]:
                 reranked_docs_fallback.append(f"""
@@ -155,7 +194,7 @@ class RAGService:
 {hit.payload['page_content']}""")
             return {"context_text": "\n\n".join(reranked_docs_fallback)}
 
-        # --- STEP 3: FORMAT RESULTS ---
+        # Format results
         reranked_docs = []
         for r in rerank_results.results:
             idx = r.index
@@ -169,7 +208,6 @@ class RAGService:
             pages = meta.get('pages', [])
             
             reranked_docs.append(f"""
---- Context Segment (Relevance Score: {r.relevance_score:.4f}) ---
 Кітап атауы: {discipline}
 Сынып: {grade}
 Баспа: {publisher}
@@ -179,8 +217,16 @@ class RAGService:
             
         return {"context_text": "\n\n".join(reranked_docs)}
 
-    def build_prompt_with_context(self, input_dict):
-        """Build prompt with conversation history for context."""
+    def build_prompt_with_context(self, input_dict: Dict[str, Any]) -> List[HumanMessage]:
+        """
+        Build prompt with conversation history for context.
+        
+        Args:
+            input_dict: Dict containing 'context_messages', 'question', 'context_data'
+            
+        Returns:
+            List containing HumanMessage with formatted prompt
+        """
         context_messages = input_dict.get("context_messages", [])
         question = input_dict["question"]
         context_data = input_dict["context_data"]
@@ -218,12 +264,27 @@ class RAGService:
         
         return [HumanMessage(content=prompt_text)]
 
-    def init_chain(self):
+    def init_chain(self) -> None:
         """Initialize chain - kept for compatibility."""
         pass  # We now use stream_chat_with_context directly
 
-    def stream_chat_with_context(self, context_messages: list, question: str, filters: dict = None):
-        """Stream chat with conversation context."""
+    def stream_chat_with_context(
+        self, 
+        context_messages: List[Dict[str, str]], 
+        question: str, 
+        filters: Optional[Dict[str, Any]] = None
+    ) -> Generator[str, None, None]:
+        """
+        Stream chat with conversation context.
+        
+        Args:
+            context_messages: List of previous messages with 'role' and 'content'
+            question: Current user question
+            filters: Optional filters for RAG search
+            
+        Yields:
+            String chunks of the generated response
+        """
         # Get context from RAG
         context_data = self.hybrid_retriever_func(question, filters)
         
@@ -241,7 +302,7 @@ class RAGService:
             # Handle different response formats
             if hasattr(chunk, 'content'):
                 content = chunk.content
-                # Gemini 3 may return list of dicts with 'text' key
+                # Gemini may return list of dicts with 'text' key
                 if isinstance(content, list):
                     for item in content:
                         if isinstance(item, dict) and 'text' in item:
@@ -252,6 +313,3 @@ class RAGService:
                     yield str(content)
             else:
                 yield str(chunk)
-
-# Instantiate as singleton (lazy load could be better but sticking to plan)
-# We will instantiate it in main.py or dependency to control lifecycle.

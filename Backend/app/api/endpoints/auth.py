@@ -1,4 +1,6 @@
-from datetime import timedelta
+"""
+Authentication endpoints for user registration and login.
+"""
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -12,13 +14,17 @@ from Backend.app.core.security import (
     get_current_user,
 )
 from Backend.app.core.config import settings
+from Backend.app.services.user_service import get_user_message_limit
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
 
 @router.post("/register", response_model=TokenResponse)
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
     """
     Register a new user.
+    
+    Creates a new user account and returns an access token.
     """
     # Check if user already exists
     existing_user = db.query(User).filter(User.email == request.email).first()
@@ -49,10 +55,13 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
 
+
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
     """
     Login with email and password.
+    
+    Validates credentials and returns an access token.
     """
     # Find user
     user = db.query(User).filter(User.email == request.email).first()
@@ -87,14 +96,15 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
     )
 
+
 @router.get("/me", response_model=UserResponse)
 def get_me(current_user: User = Depends(get_current_user)):
     """
     Get current authenticated user.
+    
+    Returns user profile information including subscription status.
     """
-    # Define plan limits
-    plan_limits = {"free": 5, "pro": 200}
-    limit = plan_limits.get(current_user.subscription_tier, 5)
+    limit = get_user_message_limit(current_user)
     
     return UserResponse(
         id=str(current_user.id),

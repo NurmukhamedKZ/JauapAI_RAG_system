@@ -24,14 +24,12 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
     const [isLoading, setIsLoading] = useState(false);
     const [showAuthModal, setShowAuthModal] = useState(false);
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-    const [thinkingTime, setThinkingTime] = useState(0);
     const [filters, setFilters] = useState<ChatFilters>({
         model: 'gemini-1.5-flash',
     });
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const initialMessageProcessed = useRef(false);
-    const thinkingInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,26 +38,6 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
-
-    // Thinking timer
-    useEffect(() => {
-        if (isLoading) {
-            setThinkingTime(0);
-            thinkingInterval.current = setInterval(() => {
-                setThinkingTime(prev => prev + 1);
-            }, 1000);
-        } else {
-            if (thinkingInterval.current) {
-                clearInterval(thinkingInterval.current);
-                thinkingInterval.current = null;
-            }
-        }
-        return () => {
-            if (thinkingInterval.current) {
-                clearInterval(thinkingInterval.current);
-            }
-        };
-    }, [isLoading]);
 
     // Load conversation messages
     useEffect(() => {
@@ -143,6 +121,12 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                     });
                 }
             );
+
+            // Reload conversation after streaming to sync with backend-saved message
+            // This ensures the message persists even if there are state issues
+            if (currentConversationId) {
+                await loadConversation();
+            }
         } catch (error: any) {
             console.error('Error sending message:', error);
 
@@ -210,11 +194,13 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                                                         {msg.content}
                                                     </div>
                                                 ) : isLoading && idx === messages.length - 1 ? (
-                                                    <div className="text-gray-400 text-sm">
-                                                        {language === 'kk'
-                                                            ? `Ойланып жатыр ${thinkingTime}с...`
-                                                            : `Думает ${thinkingTime}с...`
-                                                        }
+                                                    <div className="flex items-center gap-1 text-gray-400 text-sm">
+                                                        <span>{language === 'kk' ? 'Ойланып жатыр' : 'Думает'}</span>
+                                                        <span className="flex gap-0.5">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                                        </span>
                                                     </div>
                                                 ) : null}
                                             </div>

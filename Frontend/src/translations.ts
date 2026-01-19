@@ -10,9 +10,13 @@ export const translations = {
             about: 'About',
             cta: 'Start Practice',
         },
+        meta: {
+            title: 'JauapAI - The Best UNT/ENT Exam Preparation & AI Tutor',
+            description: 'Master the ENT/UNT exam with JauapAI. Instant answers from official textbooks, personalized practice tests, and probability/math logic explanations. Start for free.',
+        },
         hero: {
-            title_start: 'Your Personal',
-            title_end: 'Shortcut to a Grant',
+            title_start: 'JauapAI: Your Shortest Path',
+            title_end: 'to a UNT Grant',
             subtitle: 'Stop wasting time searching through dozens of textbooks. JauapAI finds the exact answer from official ENT books instantly.',
             cta_primary: 'Start Practice — Free',
             cta_secondary: 'Try Demo Chat',
@@ -23,13 +27,28 @@ export const translations = {
             mock_answer_intro: 'Probability is all about counting favorable outcomes vs total outcomes! 🎲',
             mock_answer_detail: 'Here is a step-by-step breakdown using the formula P(A) = n(A) / n(S)...',
             input_placeholder: 'Ask a question about ENT history...',
+            no_registration: 'No Registration Required for First 3 Questions',
             badges: ['History of Kazakhstan', 'Math Literacy', 'Biology'],
+            chips: {
+                math: 'Solve this math problem',
+                history: 'Explain 1916 revolt',
+                biology: 'Biology definitions'
+            }
         },
         features: {
             personalized: { title: 'Personalized Practice', desc: 'AI adapts to your weak spots instantly.' },
             tests: { title: 'Exam-Style Tests', desc: 'Practice with real timing and formats.' },
             tracking: { title: 'Progress Tracking', desc: 'Visual analytics of your score growth.' },
             expert: { title: 'Expert Explanations', desc: 'Clear reasoning for every answer.' },
+        },
+        publishers: {
+            title: 'Trusted by Students using Official Textbooks',
+        },
+        testimonials: {
+            title: 'Success Stories',
+            item1: { text: "Helped me add 15 points to my Math score!", author: "Aruzhan, 11th Grade" },
+            item2: { text: "The probability explanations finally made sense.", author: "Bekzat, 10th Grade" },
+            item3: { text: "Perfect for quick revision before tests.", author: "Diana, 11th Grade" }
         },
         core: {
             title: 'Why JauapAI',
@@ -91,6 +110,10 @@ export const translations = {
             about: 'Біз туралы',
             cta: 'Дайындықты бастау',
         },
+        meta: {
+            title: 'JauapAI - ҰБТ-ға дайындық | Грантқа түсу құралы',
+            description: 'JauapAI-мен ҰБТ-ға дайындал. Ресми оқулықтардан лезде жауап, жеке тесттер және математикалық логика түсіндірмелері. Тегін баста.',
+        },
         hero: {
             title_start: 'Грантқа апаратын',
             title_end: 'Ең қысқа жол',
@@ -104,13 +127,28 @@ export const translations = {
             mock_answer_intro: 'Ықтималдық – бұл қолайлы нәтижелерді жалпы нәтижелерге бөлу! 🎲',
             mock_answer_detail: 'Міне, P(A) = n(A) / n(S) формуласын қолдана отырып қадамдық түсіндірме...',
             input_placeholder: 'Қазақстан тарихынан сұрақ қойыңыз...',
+            no_registration: 'Алғашқы 3 сұраққа тіркелу қажет емес',
             badges: ['Қазақстан тарихы', 'Оқу сауаттылығы', 'Биология'],
+            chips: {
+                math: 'Математика есебін шығар',
+                history: '1916 жылғы көтерілісті түсіндір',
+                biology: 'Биология анықтамалары'
+            }
         },
         features: {
             personalized: { title: 'Жеке Дайындық', desc: 'AI сіздің әлсіз тұстарыңызға бірден бейімделеді.' },
             tests: { title: 'Емтихан Стилі', desc: 'Нақты уақыт пен форматтағы практика.' },
             tracking: { title: 'Прогресті Бақылау', desc: 'Ұпай өсуінің визуалды аналитикасы.' },
             expert: { title: 'Сарапшы Түсіндірмесі', desc: 'Әр жауап үшін нақты дәлелдеме.' },
+        },
+        publishers: {
+            title: 'Ресми оқулықтарды қолданатын оқушылар сенімі',
+        },
+        testimonials: {
+            title: 'Жетістік тарихтары',
+            item1: { text: "Математикадан 15 ұпай қосуға көмектесті!", author: "Аружан, 11-сынып" },
+            item2: { text: "Ықтималдық түсіндірмелері енді түсінікті болды.", author: "Бекзат, 10-сынып" },
+            item3: { text: "Тест алдында жылдам қайталау үшін өте ыңғайлы.", author: "Диана, 11-сынып" }
         },
         core: {
             title: 'Неге JauapAI',
@@ -172,6 +210,10 @@ export const translations = {
             about: 'О нас',
             cta: 'Начать практику',
         },
+        meta: {
+            title: 'JauapAI - Подготовка к ЕНТ c ИИ | Решебник и Тесты',
+            description: 'Подготовься к ЕНТ с JauapAI. Мгновенные ответы из официальных учебников, персональные тесты и объяснения задач. Начни бесплатно.',
+        },
         hero: {
             title_start: 'Твой короткий путь',
             title_end: 'к гранту',
@@ -185,13 +227,28 @@ export const translations = {
             mock_answer_intro: 'Вероятность — это отношение благоприятных исходов к общим! 🎲',
             mock_answer_detail: 'Вот пошаговый разбор с использованием формулы P(A) = n(A) / n(S)...',
             input_placeholder: 'Задай вопрос по истории Казахстана...',
+            no_registration: 'Регистрация не требуется для первых 3 вопросов',
             badges: ['История Казахстана', 'Мат. Грамотность', 'Биология'],
+            chips: {
+                math: 'Реши задачу по математике',
+                history: 'Объясни восстание 1916 года',
+                biology: 'Определения по биологии'
+            }
         },
         features: {
             personalized: { title: 'Персонализация', desc: 'ИИ мгновенно адаптируется к твоим слабым местам.' },
             tests: { title: 'Формат Екзамена', desc: 'Практика с реальным таймингом и форматами.' },
             tracking: { title: 'Отслеживание Прогресса', desc: 'Визуальная аналитика роста твоих баллов.' },
-            expert: { title: 'Экспертные Объяснения', desc: 'Четкое обоснование для каждого ответа.' },
+            expert: { title: 'Объяснения эксперта', desc: 'Получайте полные объяснения к любой ошибке или сложному вопросу.' },
+        },
+        publishers: {
+            title: 'Нам доверяют, используя официальные учебники',
+        },
+        testimonials: {
+            title: 'Истории успеха',
+            item1: { text: "Помогло добавить 15 баллов по математике!", author: "Аружан, 11 класс" },
+            item2: { text: "Объяснения вероятности наконец-то стали понятны.", author: "Бекзат, 10 класс" },
+            item3: { text: "Идеально для быстрого повторения перед тестом.", author: "Диана, 11 класс" }
         },
         core: {
             title: 'Почему JauapAI',

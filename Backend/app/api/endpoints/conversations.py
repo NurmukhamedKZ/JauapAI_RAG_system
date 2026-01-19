@@ -1,10 +1,13 @@
+"""
+Conversation endpoints for managing chat history.
+Handles CRUD operations and message streaming with context.
+"""
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import List
 from uuid import UUID
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 from Backend.app.db.database import get_db
 from Backend.app.models.chat import Conversation, Message
@@ -14,28 +17,17 @@ from Backend.app.schemas.chat import (
     ConversationResponse,
     ConversationDetailResponse,
     MessageCreate,
-    MessageResponse,
 )
 from Backend.app.core.security import get_current_user
+from Backend.app.services.user_service import (
+    check_and_reset_message_count,
+    check_message_limit,
+    increment_message_count,
+)
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/conversations", tags=["Conversations"])
-
-# Plan limits
-PLAN_LIMITS = {
-    "free": 5,
-    "pro": 200,
-}
-
-
-def check_and_reset_message_count(user: User, db: Session) -> User:
-    """Reset message count if a month has passed since last reset."""
-    now = datetime.utcnow()
-    if user.message_count_reset_at is None or user.message_count_reset_at < now - relativedelta(months=1):
-        user.message_count = 0
-        user.message_count_reset_at = now
-        db.commit()
-        db.refresh(user)
-    return user
 
 
 @router.get("", response_model=List[ConversationResponse])
@@ -134,17 +126,12 @@ async def send_message(
     user = check_and_reset_message_count(user, db)
     
     # Check message limit
-    limit = PLAN_LIMITS.get(user.subscription_tier, 5)
-    if user.message_count >= limit:
-        raise HTTPException(
-            status_code=429,
-            detail=f"Message limit reached. You have used {user.message_count}/{limit} messages this month. Upgrade to Pro for more messages."
-        )
+    within_limit, error_message = check_message_limit(user)
+    if not within_limit:
+        raise HTTPException(status_code=429, detail=error_message)
     
     # Increment message count
-    user.message_count += 1
-    db.commit()
-    db.refresh(user)
+    user = increment_message_count(user, db)
     
     # Get RAG service
     rag_service = getattr(request.app.state, "rag_service", None)
@@ -160,12 +147,10 @@ async def send_message(
     )
     
     # Build context from previous messages (last 10)
-    context_messages = []
-    for msg in previous_messages[-10:]:
-        context_messages.append({
-            "role": msg.role,
-            "content": msg.content
-        })
+    context_messages = [
+        {"role": msg.role, "content": msg.content}
+        for msg in previous_messages[-10:]
+    ]
     
     # Save user message
     user_message = Message(
@@ -186,12 +171,9 @@ async def send_message(
     # Prepare filters for RAG
     filters = {}
     if data.filters:
-        if data.filters.get("discipline"):
-            filters["discipline"] = data.filters["discipline"]
-        if data.filters.get("grade"):
-            filters["grade"] = data.filters["grade"]
-        if data.filters.get("publisher"):
-            filters["publisher"] = data.filters["publisher"]
+        for key in ["discipline", "grade", "publisher"]:
+            if data.filters.get(key):
+                filters[key] = data.filters[key]
     
     # Generate and stream response
     async def generate():
@@ -210,19 +192,22 @@ async def send_message(
                 full_response += text
                 yield text
         except Exception as e:
-            error_msg = f"Error: {str(e)}"
+            error_msg = f"Error generating response: {str(e)}"
+            logger.error(error_msg)
             full_response = error_msg
             yield error_msg
         
         # Save assistant message after streaming completes
-        assistant_message = Message(
-            conversation_id=conversation_id,
-            role="assistant",
-            content=full_response,
-            filters=data.filters
-        )
-        db.add(assistant_message)
-        db.commit()
+        try:
+            assistant_message = Message(
+                conversation_id=conversation_id,
+                role="assistant",
+                content=full_response,
+                filters=data.filters
+            )
+            db.add(assistant_message)
+            db.commit()
+        except Exception as e:
+            logger.error(f"Error saving assistant message: {e}")
     
     return StreamingResponse(generate(), media_type="text/plain")
-
