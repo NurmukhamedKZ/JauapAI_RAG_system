@@ -219,7 +219,12 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.company': 'Компания',
         'footer.rights': 'Барлық құқықтар қорғалған.',
         'footer.privacy': 'Құпиялылық саясаты',
+
         'footer.terms': 'Қолдану ережелері',
+
+        // Meta Tags
+        'meta.title': 'JauapAI - ҰБТ сұрақтарына жауап беретін AI',
+        'meta.description': 'JauapAI – Қазақстан тарихы, Математика, Физика және басқа пәндер бойынша ҰБТ сұрақтарына жылдам әрі нақты жауап беретін жасанды интеллект. Дайындықты бүгін бастаңыз!',
     },
     ru: {
         // Sidebar
@@ -431,7 +436,12 @@ const translations: Record<Language, Record<string, string>> = {
         'footer.company': 'Компания',
         'footer.rights': 'Все права защищены.',
         'footer.privacy': 'Политика конфиденциальности',
+
         'footer.terms': 'Условия использования',
+
+        // Meta Tags
+        'meta.title': 'JauapAI - ИИ для подготовки к ЕНТ',
+        'meta.description': 'JauapAI – искусственный интеллект, дающий быстрые и точные ответы на вопросы ЕНТ по Истории Казахстана, Математике, Физике и другим предметам. Начните подготовку сегодня!',
     }
 };
 
