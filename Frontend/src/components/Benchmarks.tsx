@@ -12,10 +12,10 @@ const Benchmarks = () => {
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
     const benchmarkData = [
-        { label: t('benchmarks.subjects.math'), score: 98, color: 'bg-emerald-500' },
-        { label: t('benchmarks.subjects.history'), score: 95, color: 'bg-teal-400' },
-        { label: t('benchmarks.subjects.reading'), score: 92, color: 'bg-emerald-300' },
-        { label: t('benchmarks.subjects.biology'), score: 88, color: 'bg-slate-500' },
+        { label: t('benchmarks.subjects.math'), score: 128, color: 'bg-emerald-500' },
+        { label: t('benchmarks.subjects.history'), score: 125, color: 'bg-teal-400' },
+        { label: t('benchmarks.subjects.reading'), score: 122, color: 'bg-emerald-300' },
+        { label: t('benchmarks.subjects.informatics'), score: 118, color: 'bg-slate-500' },
     ];
 
     return (
@@ -35,7 +35,7 @@ const Benchmarks = () => {
 
                     <div className="grid grid-cols-2 gap-8">
                         <div className="bg-surface/50 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
-                            <div className="text-4xl font-bold text-emerald-400 mb-1">+30%</div>
+                            <div className="text-4xl font-bold text-emerald-400 mb-1">+30</div>
                             <div className="text-sm text-text-muted font-medium">{t('benchmarks.stat_increase')}</div>
                         </div>
                         <div className="bg-surface/50 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
@@ -53,12 +53,12 @@ const Benchmarks = () => {
                             <div key={index}>
                                 <div className="flex justify-between text-sm font-medium mb-2">
                                     <span className="text-text-main">{item.label}</span>
-                                    <span className="text-text-dim">{item.score}%</span>
+                                    <span className="text-text-dim">{item.score} {t('benchmarks.points')}</span>
                                 </div>
                                 <div className="h-3 bg-surface rounded-full overflow-hidden border border-white/5">
                                     <motion.div
                                         initial={{ width: 0 }}
-                                        animate={isInView ? { width: `${item.score}%` } : { width: 0 }}
+                                        animate={isInView ? { width: `${(item.score / 140) * 100}%` } : { width: 0 }}
                                         transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.2 }}
                                         className={`h-full rounded-full ${item.color} shadow-[0_0_10px_rgba(16,185,129,0.3)]`}
                                     ></motion.div>

@@ -18,7 +18,7 @@ const CoreFeatures = () => {
                         viewport={{ once: true }}
                         className="text-4xl lg:text-5xl font-bold font-heading text-text-main mb-4"
                     >
-                        Why Jauap<span className="text-emerald-glow">AI</span> Works
+                        {t('core.title')} <span className="text-emerald-glow">{t('core.title_accent')}</span>
                     </motion.h2>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -27,7 +27,7 @@ const CoreFeatures = () => {
                         transition={{ delay: 0.1 }}
                         className="text-text-muted text-lg max-w-2xl mx-auto"
                     >
-                        The only tool you need to master the UNT.
+                        {t('core.subtitle')}
                     </motion.p>
                 </div>
 

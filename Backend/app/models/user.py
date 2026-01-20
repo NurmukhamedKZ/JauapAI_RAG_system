@@ -21,6 +21,9 @@ class User(Base):
     google_id = Column(String, unique=True, index=True, nullable=True)  # Google OAuth ID
     full_name = Column(String, nullable=True)
     is_active = Column(Boolean, default=True)
+    is_email_verified = Column(Boolean, default=False)  # Email verification status
+    email_verification_token = Column(String, nullable=True, index=True)  # Verification token
+    email_verification_expires_at = Column(DateTime(timezone=True), nullable=True)  # Token expiry
     subscription_tier = Column(String, default="free")  # free, pro
     message_count = Column(Integer, default=0)
     message_count_reset_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))

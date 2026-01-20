@@ -25,7 +25,7 @@ const CTASection = () => {
                     <div className="relative z-10 max-w-3xl mx-auto">
                         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-deep/50 border border-emerald-glow/30 mb-8">
                             <Sparkles className="w-4 h-4 text-emerald-glow" />
-                            <span className="text-sm font-medium text-emerald-100">Limited Time Offer</span>
+                            <span className="text-sm font-medium text-emerald-100">{t('cta.badge')}</span>
                         </div>
 
                         <h2 className="text-4xl md:text-6xl font-bold font-heading text-text-main mb-8 leading-tight">
@@ -36,16 +36,12 @@ const CTASection = () => {
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                            <form className="w-full max-w-md flex flex-col sm:flex-row gap-3" onSubmit={(e) => { e.preventDefault(); navigate('/register'); }}>
-                                <input
-                                    type="email"
-                                    placeholder={t('cta.placeholder')}
-                                    className="flex-1 px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-text-main placeholder-text-dim focus:outline-none focus:ring-2 focus:ring-emerald-glow/50 backdrop-blur-sm transition-all"
-                                />
-                                <button className="px-8 py-4 bg-emerald-glow text-void font-bold rounded-xl hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] transform hover:scale-105 flex items-center justify-center gap-2 whitespace-nowrap">
-                                    {t('cta.button')} <ArrowRight className="w-5 h-5" />
-                                </button>
-                            </form>
+                            <button
+                                onClick={() => navigate('/chat')}
+                                className="px-12 py-5 bg-emerald-glow text-void font-bold text-lg rounded-2xl hover:bg-emerald-500 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)] transform hover:scale-105 flex items-center justify-center gap-3 whitespace-nowrap"
+                            >
+                                {t('cta.button')} <ArrowRight className="w-6 h-6" />
+                            </button>
                         </div>
 
                         <p className="mt-8 text-sm text-text-dim">

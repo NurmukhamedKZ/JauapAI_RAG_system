@@ -48,6 +48,10 @@ const translations: Record<Language, Record<string, string>> = {
         mektep: 'Мектеп',
         armanpv: 'АрманПВ',
         almatyKitap: 'Алматы кітап',
+        'publishers.atamura': 'Атамұра',
+        'publishers.mektep': 'Мектеп',
+        'publishers.armanpv': 'Арман-ПВ',
+        'publishers.almatykitap': 'Алматы Кітап',
         geminiFlash: 'Gemini Flash (Жылдам)',
         geminiPro: 'Gemini Pro (Дәлірек)',
 
@@ -87,6 +91,7 @@ const translations: Record<Language, Record<string, string>> = {
         welcomeBack: 'Қайта оралуыңызбен',
         signInToContinue: 'Дайындықты жалғастыру үшін кіріңіз',
         emailAddress: 'Email мекенжайы',
+        heroNoRegistration: 'Тіркелу қажет емес',
         password: 'Құпиясөз',
         rememberMe: 'Мені есте сақта',
         forgotPassword: 'Құпиясөзді ұмыттыңыз ба?',
@@ -97,6 +102,7 @@ const translations: Record<Language, Record<string, string>> = {
         createAccount: 'Аккаунт ашу',
         startJourney: 'Грантқа сапарыңызды бүгін бастаңыз',
         fullNameLabel: 'Толық аты',
+
         iAgreeTo: 'Мен келісемін',
         termsOfService: 'Қызмет көрсету шарттары',
         and: 'және',
@@ -138,6 +144,8 @@ const translations: Record<Language, Record<string, string>> = {
         'hero.badge.geography': 'География',
         'hero.badge.biology': 'Биология',
         'hero.badge.chemistry': 'Химия',
+        'verified.title': 'Тексерілген мазмұн',
+        'verified.desc': '100% ресми ҚР БҒМ оқулықтарына негізделген.',
 
         // Landing Page - Features
         'features.personalized.title': 'Жеке дайындық',
@@ -158,6 +166,7 @@ const translations: Record<Language, Record<string, string>> = {
         'howItWorks.step2.desc': 'AI секунд ішінде толық түсіндірмесімен жауап береді.',
         'howItWorks.step3.title': 'Нәтижені жақсартыңыз',
         'howItWorks.step3.desc': 'Қателермен жұмыс жасап, ұпайыңызды көтеріңіз.',
+        'howItWorks.subtitle': 'Академиялық жетістікке жетудің үш қарапайым қадамы.',
 
         // Landing Page - Core Features
         'core.title': 'Негізгі',
@@ -181,15 +190,27 @@ const translations: Record<Language, Record<string, string>> = {
         'benchmarks.subjects.history': 'Тарих',
         'benchmarks.subjects.reading': 'Оқу сауаттылығы',
         'benchmarks.subjects.biology': 'Биология',
+        'benchmarks.subjects.informatics': 'Информатика',
+        'benchmarks.points': 'балл',
         'benchmarks.legend_student': 'JauapAI оқушысы',
         'benchmarks.legend_average': 'Орташа көрсеткіш',
+
+        // Testimonials
+        'testimonials.title': 'Оқушылардың пікірлері',
+        'testimonials.item1.text': 'JauapAI арқасында тарихтан 15 балдан 35 балға көтерілдім! Түсіндірмелері өте түсінікті.',
+        'testimonials.item1.author': 'Алихан, 11 сынып',
+        'testimonials.item2.text': 'Математикадан қиын есептерді суретке түсіріп жіберемін, бірден шешімін аламын. Өте ыңғайлы.',
+        'testimonials.item2.author': 'Аружан, 10 сынып',
+        'testimonials.item3.text': 'ҰБТ-ға дайындық үшін таптырмас құрал. Басқа сайттардан қарағанда әлдеқайда жылдам.',
+        'testimonials.item3.author': 'Санжар, 11 сынып',
 
         // Landing Page - CTA
         'cta.title': 'Дайындықты қазір бастаңыз',
         'cta.subtitle': 'Мыңдаған оқушылар JauapAI-мен бірге грантқа дайындалуда. Сіз де қосылыңыз!',
         'cta.placeholder': 'Сіздің email поштаңыз',
-        'cta.button': 'Тіркелу',
+        'cta.button': 'Чатқа өту',
         'cta.disclaimer': 'Тегін сынақ мерзімі бар. Кредит карта қажет емес.',
+        'cta.badge': 'Шектеулі ұсыныс',
 
         // Landing Page - Footer
         'footer.desc': 'Қазақстандық оқушыларға арналған №1 AI ҰБТ көмекшісі.',
@@ -239,6 +260,10 @@ const translations: Record<Language, Record<string, string>> = {
         mektep: 'Мектеп',
         armanpv: 'АрманПВ',
         almatyKitap: 'Алматы кітап',
+        'publishers.atamura': 'Атамұра',
+        'publishers.mektep': 'Мектеп',
+        'publishers.armanpv': 'Арман-ПВ',
+        'publishers.almatykitap': 'Алматы Кітап',
         geminiFlash: 'Gemini Flash (Быстрый)',
         geminiPro: 'Gemini Pro (Точный)',
 
@@ -279,6 +304,7 @@ const translations: Record<Language, Record<string, string>> = {
         signInToContinue: 'Войдите, чтобы продолжить подготовку',
         emailAddress: 'Email адрес',
         password: 'Пароль',
+        heroNoRegistration: 'Регистрация не требуется',
         rememberMe: 'Запомнить меня',
         forgotPassword: 'Забыли пароль?',
         signIn: 'Войти',
@@ -288,6 +314,7 @@ const translations: Record<Language, Record<string, string>> = {
         createAccount: 'Создать аккаунт',
         startJourney: 'Начните путь к гранту сегодня',
         fullNameLabel: 'Полное имя',
+
         iAgreeTo: 'Я согласен с',
         termsOfService: 'Условиями обслуживания',
         and: 'и',
@@ -329,6 +356,8 @@ const translations: Record<Language, Record<string, string>> = {
         'hero.badge.geography': 'География',
         'hero.badge.biology': 'Биология',
         'hero.badge.chemistry': 'Химия',
+        'verified.title': 'Проверенный контент',
+        'verified.desc': '100% основано на официальных учебниках МОН РК.',
 
         // Landing Page - Features
         'features.personalized.title': 'Персональная подготовка',
@@ -349,6 +378,7 @@ const translations: Record<Language, Record<string, string>> = {
         'howItWorks.step2.desc': 'AI даст ответ с полным объяснением за секунды.',
         'howItWorks.step3.title': 'Улучшайте результат',
         'howItWorks.step3.desc': 'Работайте над ошибками и повышайте свой балл.',
+        'howItWorks.subtitle': 'Три простых шага к академическому успеху.',
 
         // Landing Page - Core Features
         'core.title': 'Основные',
@@ -372,15 +402,27 @@ const translations: Record<Language, Record<string, string>> = {
         'benchmarks.subjects.history': 'История',
         'benchmarks.subjects.reading': 'Грамотность чтения',
         'benchmarks.subjects.biology': 'Биология',
+        'benchmarks.subjects.informatics': 'Информатика',
+        'benchmarks.points': 'баллов',
         'benchmarks.legend_student': 'Ученик JauapAI',
         'benchmarks.legend_average': 'Средний показатель',
+
+        // Testimonials
+        'testimonials.title': 'Отзывы учеников',
+        'testimonials.item1.text': 'Благодаря JauapAI поднял историю с 15 до 35 баллов! Объяснения очень понятные.',
+        'testimonials.item1.author': 'Алихан, 11 класс',
+        'testimonials.item2.text': 'Фотографирую сложные задачи по математике и сразу получаю решение. Очень удобно.',
+        'testimonials.item2.author': 'Аружан, 10 класс',
+        'testimonials.item3.text': 'Незаменимый инструмент для подготовки к ЕНТ. Намного быстрее, чем другие сайты.',
+        'testimonials.item3.author': 'Санжар, 11 класс',
 
         // Landing Page - CTA
         'cta.title': 'Начните подготовку сейчас',
         'cta.subtitle': 'Тысячи учеников уже готовятся к гранту с JauapAI. Присоединяйтесь!',
         'cta.placeholder': 'Ваш email адрес',
-        'cta.button': 'Регистрация',
+        'cta.button': 'Перейти в чат',
         'cta.disclaimer': 'Есть бесплатный пробный период. Кредитная карта не требуется.',
+        'cta.badge': 'Ограниченное предложение',
 
         // Landing Page - Footer
         'footer.desc': '№1 AI помощник для ЕНТ для казахстанских школьников.',

@@ -111,9 +111,9 @@ const FeatureCards = () => {
                         <div className="flex-1">
                             <h3 className="text-xl font-bold text-text-main mb-2 flex items-center gap-2">
                                 <CheckCircle2 className="w-5 h-5 text-emerald-glow" />
-                                Verified Content
+                                {t('verified.title')}
                             </h3>
-                            <p className="text-sm text-text-muted">100% based on official Ministry of Education textbooks.</p>
+                            <p className="text-sm text-text-muted">{t('verified.desc')}</p>
                         </div>
                         <div className="hidden sm:flex -space-x-3">
                             {[1, 2, 3, 4].map(i => (

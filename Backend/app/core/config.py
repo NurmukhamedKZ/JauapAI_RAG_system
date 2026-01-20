@@ -80,6 +80,12 @@ class Settings(BaseSettings):
     TELEGRAM_WEBHOOK_URL: str = Field(default="", description="Webhook URL for Telegram updates")
     PRO_PLAN_PRICE_STARS: int = Field(default=100, ge=1, description="Pro plan price in Telegram Stars")
     
+    # Email Service (Resend)
+    RESEND_API_KEY: str = Field(default="", description="Resend API key for email sending")
+    RESEND_FROM_EMAIL: str = Field(default="noreply@jauap.ai", description="Verified sender email address")
+    FRONTEND_URL: str = Field(default="http://localhost:5173", description="Frontend URL for email links")
+    EMAIL_VERIFICATION_EXPIRE_HOURS: int = Field(default=24, ge=1, description="Email verification token expiry in hours")
+    
     @property
     def plan_limits(self) -> Dict[str, int]:
         """Get plan limits as a dictionary."""

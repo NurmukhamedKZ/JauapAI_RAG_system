@@ -5,10 +5,10 @@ const TrustedPublishers = () => {
 
     // Using text placeholders styled as logos since we don't have actual SVG/PNGs yet
     const publishers = [
-        { name: 'Atamura', color: 'text-blue-600' },
-        { name: 'Mektep', color: 'text-red-600' },
-        { name: 'Arman-PV', color: 'text-green-600' },
-        { name: 'Almaty Kitap', color: 'text-purple-600' }
+        { name: t('publishers.atamura'), color: 'text-blue-600' },
+        { name: t('publishers.mektep'), color: 'text-red-600' },
+        { name: t('publishers.armanpv'), color: 'text-green-600' },
+        { name: t('publishers.almatykitap'), color: 'text-purple-600' }
     ];
 
     return (
