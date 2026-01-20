@@ -1,0 +1,12 @@
+# Minimal dependencies for Telegram bot service
+# Database
+sqlalchemy>=2.0.25
+psycopg2-binary>=2.9.9
+
+# Telegram
+python-telegram-bot>=21.0
+
+# Configuration
+python-dotenv>=1.0.0
+pydantic>=2.6.0
+pydantic-settings>=2.0.0
