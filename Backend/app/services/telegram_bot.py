@@ -252,6 +252,30 @@ class TelegramBotService:
         update = Update.de_json(update_data, self.application.bot)
         await self.application.process_update(update)
 
+    async def set_webhook(self, webhook_url: str) -> bool:
+        """
+        Set the webhook URL for the bot.
+        
+        Args:
+            webhook_url: The full URL to the webhook endpoint (e.g. https://domain.com/api/v1/payments/webhook)
+        """
+        if not self.application:
+            self.create_application()
+            
+        try:
+            # Check current webhook info
+            current_info = await self.application.bot.get_webhook_info()
+            if current_info.url == webhook_url:
+                logger.info(f"Webhook already set to {webhook_url}")
+                return True
+                
+            await self.application.bot.set_webhook(url=webhook_url)
+            logger.info(f"Successfully set Telegram webhook to {webhook_url}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to set Telegram webhook: {e}")
+            return False
+
 
 # Global bot service instance
 telegram_bot_service = TelegramBotService()

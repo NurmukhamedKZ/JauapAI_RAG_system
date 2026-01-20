@@ -13,6 +13,7 @@ from Backend.app.api.endpoints import chat, auth, conversations, subscription, v
 from Backend.app.services.rag_service import RAGService
 from Backend.app.db.database import engine, Base
 from Backend.app.models import user, chat as chat_models, vote as vote_models, payment as payment_models
+from Backend.app.services.telegram_bot import telegram_bot_service
 
 # Setup logging
 logging.basicConfig(
@@ -41,6 +42,18 @@ async def lifespan(app: FastAPI):
         logger.error(f"Failed to initialize RAG Service: {e}")
         app.state.rag_service = None
     
+
+    
+    # Initialize Telegram Webhook if URL is configured
+    if settings.TELEGRAM_WEBHOOK_URL:
+        webhook_url = f"{settings.TELEGRAM_WEBHOOK_URL}{settings.API_V1_STR}/payments/webhook"
+        logger.info(f"Setting Telegram webhook to: {webhook_url}")
+        # Run in background to not block startup
+        try:
+            await telegram_bot_service.set_webhook(webhook_url)
+        except Exception as e:
+            logger.error(f"Failed to set Telegram webhook during startup: {e}")
+            
     yield
     
     # Shutdown
