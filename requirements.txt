@@ -12,3 +12,4 @@ llama-parse>=0.1.0
 FlagEmbedding>=1.2.8
 pydantic>=2.6.0
 python-multipart>=0.0.7
+python-telegram-bot>=21.0

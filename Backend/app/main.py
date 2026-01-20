@@ -9,10 +9,10 @@ from contextlib import asynccontextmanager
 
 from Backend.app.core.config import settings
 from Backend.app.core.middleware import RequestIDMiddleware, RequestLoggingMiddleware
-from Backend.app.api.endpoints import chat, auth, conversations, subscription, vote
+from Backend.app.api.endpoints import chat, auth, conversations, subscription, vote, payments
 from Backend.app.services.rag_service import RAGService
 from Backend.app.db.database import engine, Base
-from Backend.app.models import user, chat as chat_models, vote as vote_models
+from Backend.app.models import user, chat as chat_models, vote as vote_models, payment as payment_models
 
 # Setup logging
 logging.basicConfig(
@@ -73,6 +73,7 @@ app.include_router(chat.router, prefix=settings.API_V1_STR)
 app.include_router(conversations.router, prefix=settings.API_V1_STR)
 app.include_router(subscription.router, prefix=settings.API_V1_STR)
 app.include_router(vote.router, prefix=settings.API_V1_STR)
+app.include_router(payments.router, prefix=settings.API_V1_STR)
 
 
 @app.get("/health")

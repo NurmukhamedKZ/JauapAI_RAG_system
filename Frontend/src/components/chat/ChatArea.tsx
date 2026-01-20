@@ -57,8 +57,10 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
         const initialMessage = (location.state as any)?.initialMessage;
         if (initialMessage && !initialMessageProcessed.current) {
             initialMessageProcessed.current = true;
-            setInput(initialMessage);
+            // Clear the state so it doesn't re-trigger on refresh
             window.history.replaceState({}, document.title);
+            // Send the message immediately
+            handleSend(initialMessage);
         }
     }, [location.state]);
 
@@ -75,8 +77,10 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
         }
     };
 
-    const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+    const handleSend = async (manualMessage?: string) => {
+        const messageToSend = manualMessage || input;
+
+        if (!messageToSend.trim() || isLoading) return;
 
         // Check if user is authenticated
         if (!isAuthenticated) {
@@ -89,9 +93,9 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
             }
 
             // Guest Flow
-            const userMessage = input;
+            const userMessage = messageToSend;
             setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-            setInput('');
+            if (!manualMessage) setInput('');
             setIsLoading(true);
 
             // Add placeholder for AI response
@@ -152,9 +156,9 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
         }
 
         // Add user message to UI
-        const userMessage = input;
+        const userMessage = messageToSend;
         setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-        setInput('');
+        if (!manualMessage) setInput('');
         setIsLoading(true);
 
         // Add placeholder for AI response
@@ -334,7 +338,7 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
 
                             {/* Send Button */}
                             <button
-                                onClick={handleSend}
+                                onClick={() => handleSend()}
                                 disabled={!input.trim() || isLoading}
                                 className="p-2.5 bg-emerald-glow text-void rounded-full hover:bg-emerald-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-4 flex-shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)] transform hover:scale-105 active:scale-95"
                             >

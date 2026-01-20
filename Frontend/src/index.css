@@ -6,7 +6,7 @@
   :root {
     color-scheme: dark;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
@@ -15,7 +15,12 @@
     @apply bg-void text-text-main font-sans antialiased selection:bg-emerald-glow selection:text-void;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-heading;
   }
 }
@@ -24,7 +29,7 @@
   .glass {
     @apply bg-void/70 backdrop-blur-xl border border-white/10;
   }
-  
+
   .glass-card {
     @apply bg-surface/50 backdrop-blur-lg border border-white/5 shadow-xl;
   }
@@ -32,13 +37,89 @@
   .text-glow {
     text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
   }
-  
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
-  
+
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+}
+
+/* Subscribe Button Component Styles */
+.subscribe-button {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200;
+  @apply bg-gradient-to-r from-emerald-500 to-emerald-600 text-white;
+  @apply hover:from-emerald-400 hover:to-emerald-500 hover:shadow-lg hover:shadow-emerald-500/25;
+}
+
+.subscribe-button--loading {
+  @apply opacity-70 cursor-wait;
+}
+
+.subscribe-button__spinner {
+  @apply w-4 h-4 mr-2 border-2 border-white/30 border-t-white rounded-full animate-spin;
+}
+
+.subscribe-button--pro {
+  @apply bg-gradient-to-r from-yellow-500/20 to-amber-500/20 text-yellow-400;
+  @apply border border-yellow-500/30 cursor-default;
+}
+
+.subscribe-button__icon {
+  @apply mr-2;
+}
+
+.subscribe-button--compact {
+  @apply px-3 py-1.5 text-sm;
+}
+
+.subscribe-button__stars {
+  @apply mr-1.5;
+}
+
+/* Subscribe Card Styles */
+.subscribe-card {
+  @apply p-6 rounded-2xl;
+  @apply bg-gradient-to-br from-surface/80 to-void/80 backdrop-blur-xl;
+  @apply border border-emerald-500/20;
+  @apply shadow-xl shadow-black/20;
+}
+
+.subscribe-card__header {
+  @apply flex justify-between items-start mb-4;
+}
+
+.subscribe-card__title {
+  @apply text-lg font-bold text-white;
+}
+
+.subscribe-card__price {
+  @apply text-right;
+}
+
+.subscribe-card__amount {
+  @apply text-3xl font-bold text-emerald-400;
+}
+
+.subscribe-card__currency {
+  @apply block text-sm text-text-muted;
+}
+
+.subscribe-card__features {
+  @apply space-y-2 mb-6 text-sm text-text-muted;
+}
+
+.subscribe-card__features li {
+  @apply flex items-center gap-2;
+}
+
+.subscribe-card__button {
+  @apply w-full py-3 px-4 rounded-xl font-medium;
+  @apply inline-flex items-center justify-center;
+  @apply bg-gradient-to-r from-[#0088cc] to-[#0099dd] text-white;
+  @apply hover:from-[#0099dd] hover:to-[#00aaee] hover:shadow-lg hover:shadow-[#0088cc]/25;
+  @apply transition-all duration-200;
 }

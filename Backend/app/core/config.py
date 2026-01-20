@@ -74,6 +74,12 @@ class Settings(BaseSettings):
     FREE_TIER_MESSAGE_LIMIT: int = Field(default=5, ge=1)
     PRO_TIER_MESSAGE_LIMIT: int = Field(default=200, ge=1)
     
+    # Telegram Bot for Payments
+    TELEGRAM_BOT_TOKEN: str = Field(default="", description="Telegram bot token from @BotFather")
+    TELEGRAM_BOT_USERNAME: str = Field(default="", description="Telegram bot username without @")
+    TELEGRAM_WEBHOOK_URL: str = Field(default="", description="Webhook URL for Telegram updates")
+    PRO_PLAN_PRICE_STARS: int = Field(default=100, ge=1, description="Pro plan price in Telegram Stars")
+    
     @property
     def plan_limits(self) -> Dict[str, int]:
         """Get plan limits as a dictionary."""
