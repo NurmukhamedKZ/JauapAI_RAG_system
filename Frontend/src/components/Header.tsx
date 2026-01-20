@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Terminal } from 'lucide-react'; // Added Terminal icon for tech feel
+import { Menu, X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -38,9 +38,7 @@ const Header = () => {
                 <div className="flex justify-between items-center h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-                        <div className="w-8 h-8 rounded-lg bg-emerald-deep border border-emerald-glow/20 flex items-center justify-center group-hover:border-emerald-glow/50 transition-colors">
-                            <Terminal className="w-4 h-4 text-emerald-glow" />
-                        </div>
+                        <img src="/logo.png" alt="JauapAI" className="w-8 h-8 object-contain" />
                         <span className="text-xl font-heading font-bold text-text-main tracking-tight">
                             Jauap<span className="text-emerald-glow">AI</span>
                         </span>

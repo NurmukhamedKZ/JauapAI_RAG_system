@@ -229,13 +229,11 @@ const SettingsModal = ({ isOpen, onClose }: SettingsModalProps) => {
                                                         onClick={() => window.open('https://t.me/nureke3445', '_blank')}
                                                         className="flex items-center justify-center gap-3 w-full mt-4 bg-gradient-to-r from-[#F14635] to-[#FF6B5B] hover:from-[#FF6B5B] hover:to-[#FF8575] text-white rounded-xl py-4 px-6 text-base font-bold transition-all shadow-lg hover:shadow-[#F14635]/25"
                                                     >
-                                                        <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                                                            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z" />
-                                                        </svg>
-                                                        {language === 'kk' ? 'Kaspi арқылы төлеу' : language === 'ru' ? 'Оплата через Kaspi' : 'Pay via Kaspi'}
+                                                        <img src="/kaspi-logo.png" alt="Kaspi" className="w-6 h-6 rounded-full" />
+                                                        {language === 'kk' ? 'Pro жазылу' : language === 'ru' ? 'Перейти на Pro' : 'Pay via Kaspi'} — 980 ₸
                                                     </button>
                                                     <p className="text-xs text-white/50 text-center mt-2">
-                                                        {language === 'kk' ? 'Автормен байланысу' : language === 'ru' ? 'Связаться с автором' : 'Contact author'}
+                                                        {language === 'kk' ? 'Kaspi Bank арқылы төлеу' : language === 'ru' ? 'Оплата через Kaspi Bank' : 'Contact author'}
                                                     </p>
                                                 </>
                                             ) : (

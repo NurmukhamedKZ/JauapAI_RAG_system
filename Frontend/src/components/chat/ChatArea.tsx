@@ -31,6 +31,7 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
     const [filters, setFilters] = useState<ChatFilters>({
         model: 'gemini-1.5-flash',
     });
+    const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const initialMessageProcessed = useRef(false);
@@ -42,6 +43,22 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    // Timer for elapsed seconds during loading
+    useEffect(() => {
+        let interval: ReturnType<typeof setInterval>;
+        if (isLoading) {
+            setElapsedSeconds(0);
+            interval = setInterval(() => {
+                setElapsedSeconds(prev => prev + 1);
+            }, 1000);
+        } else {
+            setElapsedSeconds(0);
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isLoading]);
 
     // Load conversation messages
     useEffect(() => {
@@ -291,12 +308,17 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                                                         </ReactMarkdown>
                                                     </div>
                                                 ) : isLoading && idx === messages.length - 1 ? (
-                                                    <div className="flex items-center gap-2 text-text-dim text-sm ml-2">
-                                                        <span>{language === 'kk' ? 'Ойланып жатыр' : 'Думает'}</span>
-                                                        <span className="flex gap-1">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                                    <div className="flex flex-col gap-1 text-text-dim text-sm ml-2">
+                                                        <div className="flex items-center gap-2">
+                                                            <span>{language === 'kk' ? 'Ойланып жатыр' : 'Думает'}</span>
+                                                            <span className="flex gap-1">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-emerald-glow/70 font-mono text-xs">
+                                                            {elapsedSeconds} {language === 'kk' ? 'сек' : 'сек'}
                                                         </span>
                                                     </div>
                                                 ) : null}
