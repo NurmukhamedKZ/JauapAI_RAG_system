@@ -100,6 +100,19 @@ export const translations = {
             rights: 'All rights reserved.',
             privacy: 'Privacy Policy',
             terms: 'Terms of Service',
+        },
+        sidebar: {
+            newChat: 'New chat',
+            search: 'Search...',
+            loginToSeeHistory: 'Login to see your chat history',
+            noChats: 'No chat history found',
+            today: 'Today',
+            yesterday: 'Yesterday',
+            last7days: 'Previous 7 Days',
+            older: 'Older',
+            loginToSaveHistory: 'Login to save your chat history',
+            register: 'Register',
+            login: 'Login',
         }
     },
     kk: {
@@ -200,6 +213,19 @@ export const translations = {
             rights: 'Барлық құқықтар қорғалған.',
             privacy: 'Құпиялылық саясаты',
             terms: 'Қызмет көрсету шарттары',
+        },
+        sidebar: {
+            newChat: 'Жаңа чат',
+            search: 'Іздеу...',
+            loginToSeeHistory: 'Чат тарихын көру үшін кіріңіз',
+            noChats: 'Чат тарихы табылмады',
+            today: 'Бүгін',
+            yesterday: 'Кеше',
+            last7days: 'Соңғы 7 күн',
+            older: 'Ескірек',
+            loginToSaveHistory: 'Чат тарихын сақтау үшін кіріңіз',
+            register: 'Тіркелу',
+            login: 'Кіру',
         }
     },
     ru: {
@@ -300,6 +326,19 @@ export const translations = {
             rights: 'Все права защищены.',
             privacy: 'Политика конфиденциальности',
             terms: 'Условия обслуживания',
+        },
+        sidebar: {
+            newChat: 'Новый чат',
+            search: 'Поиск...',
+            loginToSeeHistory: 'Войдите, чтобы увидеть историю',
+            noChats: 'История чатов не найдена',
+            today: 'Сегодня',
+            yesterday: 'Вчера',
+            last7days: 'Последние 7 дней',
+            older: 'Более старые',
+            loginToSaveHistory: 'Войдите, чтобы сохранить историю',
+            register: 'Регистрация',
+            login: 'Войти',
         }
     }
 };

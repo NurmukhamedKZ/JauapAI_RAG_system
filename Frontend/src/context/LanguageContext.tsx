@@ -105,6 +105,12 @@ const translations: Record<Language, Record<string, string>> = {
         alreadyHaveAccount: 'Аккаунтыңыз бар ма?',
         invalidCredentials: 'Email немесе құпиясөз қате',
         registrationFailed: 'Тіркелу сәтсіз аяқталды',
+        orContinueWith: 'немесе',
+        googleLoginFailed: 'Google арқылы кіру сәтсіз аяқталды',
+        continueWithGoogle: 'Google арқылы кіру',
+        loginToSaveHistory: 'Тарихты сақтау үшін кіріңіз',
+        register: 'Тіркелу',
+        login: 'Кіру',
 
         // Landing Page - Header
         'header.advantages': 'Артықшылықтар',
@@ -290,6 +296,12 @@ const translations: Record<Language, Record<string, string>> = {
         alreadyHaveAccount: 'Уже есть аккаунт?',
         invalidCredentials: 'Неверный email или пароль',
         registrationFailed: 'Ошибка регистрации',
+        orContinueWith: 'или',
+        googleLoginFailed: 'Ошибка входа через Google',
+        continueWithGoogle: 'Войти через Google',
+        loginToSaveHistory: 'Войдите для сохранения истории',
+        register: 'Регистрация',
+        login: 'Войти',
 
         // Landing Page - Header
         'header.advantages': 'Преимущества',

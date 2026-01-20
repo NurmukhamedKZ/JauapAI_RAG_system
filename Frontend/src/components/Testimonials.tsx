@@ -11,21 +11,28 @@ const Testimonials = () => {
     ];
 
     return (
-        <section className="py-20 bg-gray-50">
-            <div className="container mx-auto px-4">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl font-bold text-text-dark">{t('testimonials.title')}</h2>
+        <section className="py-24 bg-void relative overflow-hidden">
+            <div className="container mx-auto px-4 relative z-10">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-5xl font-bold font-heading text-text-main mb-6">
+                        {t('testimonials.title')}
+                    </h2>
                 </div>
                 <div className="grid md:grid-cols-3 gap-8">
                     {testimonials.map((item, index) => (
-                        <div key={index} className="bg-white p-8 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                            <div className="flex gap-1 text-yellow-500 mb-4">
+                        <div key={index} className="glass-card p-8 rounded-2xl hover:bg-surface/50 transition-colors group">
+                            <div className="flex gap-1 text-emerald-400 mb-6">
                                 {[...Array(5)].map((_, i) => (
-                                    <Star key={i} className="w-5 h-5 fill-current" />
+                                    <Star key={i} className="w-4 h-4 fill-current drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
                                 ))}
                             </div>
-                            <p className="text-gray-700 italic mb-6 text-lg">"{item.text}"</p>
-                            <p className="font-bold text-text-dark">{item.author}</p>
+                            <p className="text-text-main italic mb-8 text-lg leading-relaxed">"{item.text}"</p>
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-deep to-emerald-glow flex items-center justify-center text-white font-bold text-sm">
+                                    {item.author.charAt(0)}
+                                </div>
+                                <p className="font-bold text-text-muted group-hover:text-emerald-glow transition-colors">{item.author}</p>
+                            </div>
                         </div>
                     ))}
                 </div>

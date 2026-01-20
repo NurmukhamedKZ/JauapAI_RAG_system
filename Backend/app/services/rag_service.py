@@ -2,6 +2,9 @@
 RAG (Retrieval-Augmented Generation) Service.
 Handles hybrid search with dense and sparse vectors, reranking, and LLM generation.
 """
+from sympy import content
+from langchain_core.messages.base import BaseMessage
+from langchain_core.messages import SystemMessage, AIMessage, HumanMessage
 import logging
 from typing import List, Optional, Dict, Any, Generator
 from qdrant_client import QdrantClient, models
@@ -9,7 +12,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_voyageai import VoyageAIEmbeddings
 import voyageai
 from FlagEmbedding import BGEM3FlagModel
-from langchain_core.messages import HumanMessage
+
 
 from Backend.app.core.config import settings
 
@@ -79,7 +82,7 @@ class RAGService:
         # 4. LLM - Google Gemini
         try:
             self.llm = ChatGoogleGenerativeAI(
-                model="gemini-2.0-flash",
+                model="gemini-3-flash-preview",
                 temperature=1,
                 google_api_key=settings.GEMINI_API_KEY
             )
@@ -189,7 +192,6 @@ class RAGService:
             reranked_docs_fallback = []
             for hit in search_results.points[:5]:
                 reranked_docs_fallback.append(f"""
---- Context Segment ---
 {hit.payload.get('metadata', {})}
 {hit.payload['page_content']}""")
             return {"context_text": "\n\n".join(reranked_docs_fallback)}
@@ -230,39 +232,28 @@ class RAGService:
         context_messages = input_dict.get("context_messages", [])
         question = input_dict["question"]
         context_data = input_dict["context_data"]
+        print(context_data)
         
-        # Build conversation history string
-        history_str = ""
-        if context_messages:
-            history_str = "\n--- Бұрынғы сұхбат ---\n"
-            for msg in context_messages:
-                role = "Сіз" if msg["role"] == "user" else "Көмекші"
-                history_str += f"{role}: {msg['content']}\n"
-            history_str += "---\n\n"
-        
-        prompt_template = """
-Сен Қазақстан тарихынан ҰБТ-ға (Ұлттық бірыңғай тестілеу) дайындайтын кәсіби репетиторсың. 
-Сенің міндетің - тек қана берілген контекст негізінде студентке жауап беру.
+        prompt = f"""
+Сен ҰБТ-ға (Ұлттық бірыңғай тестілеу) дайындайтын кәсіби репетиторсың. 
 
 Нұсқаулықтар:
 1. Жауапты нақты фактілермен (жылдар, есімдер, оқиғалар) негізде.
 2. Егер контекстте ақпарат болмаса, "Мәтінде бұл сұраққа жауап жоқ" деп айт.
 3. Жауаптың соңында міндетті түрде пайдаланылған дереккөздерді көрсет. (Кітап атауы, Сыныбы, Баспасы, Кытап беттерінің нөмірлері)
-4. Егер студент бұрынғы сұрақтары туралы сұраса, сұхбат тарихын пайдалан.
 
-{history}
 Контекст:
-{context}
-
-Сұрақ: {question}
+{context_data["context_text"]}
 """
-        prompt_text = prompt_template.format(
-            history=history_str,
-            context=context_data["context_text"], 
-            question=question
-        )
+        messages: List[BaseMessage] = [SystemMessage(content=prompt)]
+        for msg in context_messages:
+            if msg["role"] == "user":
+                messages.append(HumanMessage(content=msg["content"]))
+            else:
+                messages.append(AIMessage(content=msg["content"]))
+        messages.append(HumanMessage(content=question))
         
-        return [HumanMessage(content=prompt_text)]
+        return messages
 
     def init_chain(self) -> None:
         """Initialize chain - kept for compatibility."""

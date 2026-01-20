@@ -35,7 +35,8 @@ const LandingPage = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="bg-bg-light min-h-screen font-sans selection:bg-hero-1/20 selection:text-text-dark pb-20 md:pb-0">
+
+        <div className="bg-void min-h-screen font-sans selection:bg-emerald-glow/30 selection:text-white pb-20 md:pb-0">
             <Helmet>
                 <title>{t('meta.title')}</title>
                 <meta name="description" content={t('meta.description')} />
@@ -62,10 +63,10 @@ const LandingPage = () => {
             <Footer />
 
             {/* Mobile Sticky CTA */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200 md:hidden z-50">
+            <div className="fixed bottom-0 left-0 right-0 p-4 bg-void/80 backdrop-blur-xl border-t border-white/10 md:hidden z-50">
                 <button
                     onClick={() => navigate('/chat')}
-                    className="w-full bg-cta text-white font-bold py-3 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 animate-pulse-slow"
+                    className="w-full bg-emerald-glow text-void font-bold py-3 px-6 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center justify-center gap-2 animate-pulse-slow active:scale-95 transition-transform"
                 >
                     <MessageSquare className="w-5 h-5" />
                     {t('hero.cta_secondary')}

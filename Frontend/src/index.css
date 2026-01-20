@@ -4,20 +4,41 @@
 
 @layer base {
   :root {
-    --color-hero-1: #0E6B4A;
-    --color-hero-2: #00A67A;
-    --color-hero-3: #7EE3B9;
-    --color-bg-light: #F2FFF6;
-    --color-surface: #FFFFFF;
-    --color-text-dark: #09302A;
-    --color-text-light: #FFFFFF;
-    --color-muted: #7EAFA0;
-    --color-cta: #00B07F;
-    --color-cta-hover: #008D60;
-    --color-accent: #0E6B4A;
+    color-scheme: dark;
   }
   
   html {
     scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-void text-text-main font-sans antialiased selection:bg-emerald-glow selection:text-void;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-void/70 backdrop-blur-xl border border-white/10;
+  }
+  
+  .glass-card {
+    @apply bg-surface/50 backdrop-blur-lg border border-white/5 shadow-xl;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

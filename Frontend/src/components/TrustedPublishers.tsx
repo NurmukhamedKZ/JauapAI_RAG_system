@@ -12,17 +12,17 @@ const TrustedPublishers = () => {
     ];
 
     return (
-        <section className="py-10 border-b border-gray-100 bg-white">
+        <section className="py-10 border-b border-white/5 bg-surface/30 backdrop-blur-sm">
             <div className="container mx-auto px-4 text-center">
-                <p className="text-sm font-medium text-gray-400 mb-6 uppercase tracking-wider">
+                <p className="text-sm font-medium text-text-dim mb-8 uppercase tracking-wider">
                     {t('publishers.title')}
                 </p>
-                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50 grayscale hover:grayscale-0 transition-all duration-500 hover:opacity-100">
                     {publishers.map((pub, idx) => (
-                        <div key={idx} className={`text-2xl font-bold ${pub.color} flex items-center gap-2`}>
+                        <div key={idx} className={`text-2xl font-bold text-white flex items-center gap-3`}>
                             {/* Icon placeholder */}
-                            <div className="w-8 h-8 rounded bg-current opacity-20"></div>
-                            {pub.name}
+                            <div className="w-8 h-8 rounded-lg bg-emerald-glow/20 border border-emerald-glow/30"></div>
+                            <span className="text-text-muted hover:text-white transition-colors">{pub.name}</span>
                         </div>
                     ))}
                 </div>

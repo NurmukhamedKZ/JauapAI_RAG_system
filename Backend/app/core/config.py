@@ -62,6 +62,14 @@ class Settings(BaseSettings):
         description="Access token expiration in minutes"
     )
     
+    # Google OAuth
+    GOOGLE_CLIENT_ID: str = Field(default="", description="Google OAuth Client ID")
+    GOOGLE_CLIENT_SECRET: str = Field(default="", description="Google OAuth Client Secret")
+    GOOGLE_REDIRECT_URI: str = Field(
+        default="http://localhost:5173/auth/callback",
+        description="Google OAuth redirect URI"
+    )
+    
     # Business Logic - Plan limits
     FREE_TIER_MESSAGE_LIMIT: int = Field(default=5, ge=1)
     PRO_TIER_MESSAGE_LIMIT: int = Field(default=200, ge=1)

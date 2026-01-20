@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { ChevronDown, Zap, Book, GraduationCap, Building2 } from 'lucide-react';
+import { ChevronDown, Book, GraduationCap, Building2 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import type { ChatFilters } from '../../services/conversationService';
 import VoteModal from './VoteModal';
@@ -34,7 +34,7 @@ const FilterDropdown = ({ label, icon, value, options, onChange, onFutureSelect 
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700/50 hover:bg-gray-200 dark:hover:bg-gray-600/50 border border-gray-200 dark:border-gray-600 rounded-full text-sm text-gray-700 dark:text-gray-200 transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-surface/50 hover:bg-surface border border-white/5 hover:border-emerald-glow/30 rounded-full text-sm text-text-main transition-all shadow-sm backdrop-blur-sm"
             >
                 {icon}
                 <span className="max-w-[120px] truncate">{value ? selectedLabel : label}</span>
@@ -47,7 +47,7 @@ const FilterDropdown = ({ label, icon, value, options, onChange, onFutureSelect 
                         className="fixed inset-0 z-40"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 min-w-[180px] max-h-60 overflow-y-auto">
+                    <div className="absolute bottom-full left-0 mb-2 glass-card bg-surface/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl z-50 min-w-[180px] max-h-60 overflow-y-auto custom-scrollbar">
                         {options.map((option) => (
                             <button
                                 key={option.value}
@@ -59,16 +59,16 @@ const FilterDropdown = ({ label, icon, value, options, onChange, onFutureSelect 
                                     }
                                     setIsOpen(false);
                                 }}
-                                className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors first:rounded-t-xl last:rounded-b-xl flex items-center justify-between ${value === option.value
-                                    ? 'text-hero-1 bg-hero-1/10'
+                                className={`w-full px-4 py-2 text-left text-sm hover:bg-white/5 transition-colors first:rounded-t-xl last:rounded-b-xl flex items-center justify-between ${value === option.value
+                                    ? 'text-emerald-glow bg-emerald-glow/5'
                                     : option.isFuture
-                                        ? 'text-gray-400 dark:text-gray-500'
-                                        : 'text-gray-700 dark:text-gray-300'
+                                        ? 'text-text-dim opacity-70'
+                                        : 'text-text-main'
                                     }`}
                             >
                                 <span>{option.label}</span>
                                 {option.isFuture && (
-                                    <span className="text-[10px] bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded-full">
+                                    <span className="text-[10px] bg-yellow-500/10 text-yellow-400 px-1.5 py-0.5 rounded-full border border-yellow-500/20">
                                         скоро
                                     </span>
                                 )}
@@ -103,10 +103,7 @@ const FilterBar = ({ filters, setFilters }: FilterBarProps) => {
         setFilters({ ...filters, [key]: value || undefined });
     };
 
-    const modelOptions: DropdownOption[] = [
-        { value: 'gemini-1.5-flash', label: t('geminiFlash') },
-        { value: 'gemini-1.5-pro', label: t('geminiPro') },
-    ];
+
 
     const disciplineOptions: DropdownOption[] = [
         // All subjects option
@@ -195,18 +192,11 @@ const FilterBar = ({ filters, setFilters }: FilterBarProps) => {
     const gradeOptions = getGradeOptions();
     const publisherOptions = getPublisherOptions();
 
+
+
     return (
         <>
             <div className="flex flex-wrap items-center gap-2">
-                {/* Model */}
-                <FilterDropdown
-                    label={t('model')}
-                    icon={<Zap className="w-4 h-4 text-yellow-400" />}
-                    value={filters.model || 'gemini-1.5-flash'}
-                    options={modelOptions}
-                    onChange={(v) => handleChange('model', v)}
-                />
-
                 {/* Discipline */}
                 <FilterDropdown
                     label={t('discipline')}

@@ -43,6 +43,18 @@ export const authService = {
         return api.get<User>('/auth/me', true);
     },
 
+    // Login with Google OAuth
+    loginWithGoogle: async (credential: string): Promise<TokenResponse> => {
+        const response = await api.post<TokenResponse>('/auth/google', { credential });
+
+        // Save the access token
+        if (response.access_token) {
+            saveToken(response.access_token);
+        }
+
+        return response;
+    },
+
     // Check if user is authenticated
     isAuthenticated: (): boolean => {
         return !!getToken();

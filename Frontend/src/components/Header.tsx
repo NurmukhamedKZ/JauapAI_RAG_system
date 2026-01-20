@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Terminal } from 'lucide-react'; // Added Terminal icon for tech feel
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -14,76 +14,77 @@ const Header = () => {
 
     useEffect(() => {
         const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
+            setIsScrolled(window.scrollY > 20); // More sensitive scroll trigger
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Nav links are now dynamic based on translations
-    // We will render them directly in the JSX using t()
-
+    const navLinks = [
+        { key: 'header.advantages', href: '#advantages' },
+        { key: 'header.features', href: '#features' },
+        { key: 'header.pricing', href: '#benchmarks' },
+        { key: 'header.about', href: '#about' },
+    ];
 
     return (
         <header
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-                ? 'bg-bg-light/80 backdrop-blur-md py-3 shadow-sm'
-                : 'bg-transparent py-5'
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b ${isScrolled
+                ? 'bg-void/70 backdrop-blur-xl border-white/5 py-3'
+                : 'bg-transparent border-transparent py-5'
                 }`}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="relative flex justify-between items-center h-20">
+                <div className="flex justify-between items-center h-16">
                     {/* Logo */}
-                    <div className={`flex items-center transition-all duration-300 flex-shrink-0 z-20 ${isScrolled ? 'scale-90' : 'scale-100'}`}>
-                        <span className="text-2xl font-bold bg-gradient-to-r from-hero-1 to-hero-2 bg-clip-text text-transparent">
-                            JauapAI
+                    <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
+                        <div className="w-8 h-8 rounded-lg bg-emerald-deep border border-emerald-glow/20 flex items-center justify-center group-hover:border-emerald-glow/50 transition-colors">
+                            <Terminal className="w-4 h-4 text-emerald-glow" />
+                        </div>
+                        <span className="text-xl font-heading font-bold text-text-main tracking-tight">
+                            Jauap<span className="text-emerald-glow">AI</span>
                         </span>
                     </div>
 
-                    {/* Centered Desktop Nav */}
-                    <nav className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center space-x-8">
-                        <a href="#advantages" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
-                            {t('header.advantages')}
-                        </a>
-                        <a href="#features" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
-                            {t('header.features')}
-                        </a>
-                        <a href="#benchmarks" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
-                            {t('header.pricing')}
-                        </a>
-                        <a href="#about" className="text-text-dark hover:text-accent transition-colors font-medium text-sm whitespace-nowrap">
-                            {t('header.about')}
-                        </a>
+                    {/* Desktop Nav */}
+                    <nav className="hidden md:flex items-center gap-8">
+                        {navLinks.map((link) => (
+                            <a
+                                key={link.key}
+                                href={link.href}
+                                className="text-sm font-medium text-text-muted hover:text-emerald-glow transition-colors"
+                            >
+                                {t(link.key)}
+                            </a>
+                        ))}
                     </nav>
 
-                    {/* Right Actions (Desktop) */}
-                    <div className="hidden md:flex items-center gap-4 z-20">
+                    {/* Desktop Actions */}
+                    <div className="hidden md:flex items-center gap-4">
                         <LanguageSwitcher />
 
                         <button
                             onClick={() => navigate('/login')}
-                            className="text-text-dark hover:text-hero-1 font-medium transition-colors px-4 py-2"
+                            className="text-sm font-medium text-text-main hover:text-emerald-glow transition-colors px-4 py-2"
                         >
                             {t('loginBtn')}
                         </button>
                         <button
                             onClick={() => navigate('/register')}
-                            className="bg-cta text-white px-6 py-2.5 rounded-full font-semibold hover:bg-cta-hover transition-all duration-200 transform hover:scale-105 shadow-lg shadow-cta/20 flex items-center justify-center"
+                            className="relative group px-5 py-2.5 rounded-lg bg-emerald-glow text-void font-bold text-sm overflow-hidden transition-all hover:shadow-[0_0_20px_rgba(16,185,129,0.4)]"
                         >
-                            {t('registerBtn')}
+                            <span className="relative z-10">{t('registerBtn')}</span>
+                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                         </button>
                     </div>
 
-                    {/* Mobile Actions */}
-                    <div className="md:hidden flex items-center gap-4 z-20">
-                        <LanguageSwitcher />
-                        <button
-                            className="text-text-dark"
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        >
-                            {isMobileMenuOpen ? <X /> : <Menu />}
-                        </button>
-                    </div>
+                    {/* Mobile Toggle */}
+                    <button
+                        className="md:hidden text-text-main p-2"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    >
+                        {isMobileMenuOpen ? <X /> : <Menu />}
+                    </button>
                 </div>
             </div>
 
@@ -94,24 +95,29 @@ const Header = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-white border-t border-gray-100 overflow-hidden"
+                        className="md:hidden bg-surface border-b border-white/5 overflow-hidden"
                     >
-                        <div className="px-4 pt-2 pb-6 space-y-2">
-                            <a href="#advantages" className="block py-2 text-text-dark hover:text-accent font-medium bg-gray-50 px-3 rounded-lg" onClick={() => setIsMobileMenuOpen(false)}>{t('header.advantages')}</a>
-                            <a href="#features" className="block py-2 text-text-dark hover:text-accent font-medium bg-gray-50 px-3 rounded-lg" onClick={() => setIsMobileMenuOpen(false)}>{t('header.features')}</a>
-                            <a href="#benchmarks" className="block py-2 text-text-dark hover:text-accent font-medium bg-gray-50 px-3 rounded-lg" onClick={() => setIsMobileMenuOpen(false)}>{t('header.pricing')}</a>
-                            <a href="#about" className="block py-2 text-text-dark hover:text-accent font-medium bg-gray-50 px-3 rounded-lg" onClick={() => setIsMobileMenuOpen(false)}>{t('header.about')}</a>
-
-                            <div className="pt-2">
+                        <div className="px-4 py-6 space-y-4">
+                            {navLinks.map((link) => (
+                                <a
+                                    key={link.key}
+                                    href={link.href}
+                                    className="block text-base font-medium text-text-muted hover:text-emerald-glow"
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    {t(link.key)}
+                                </a>
+                            ))}
+                            <div className="border-t border-white/5 pt-4 space-y-3">
                                 <button
                                     onClick={() => navigate('/login')}
-                                    className="w-full text-text-dark font-medium py-3 hover:text-hero-1 transition-colors mb-2 border border-gray-200 rounded-xl"
+                                    className="block w-full text-left text-base font-medium text-text-main hover:text-emerald-glow"
                                 >
                                     {t('loginBtn')}
                                 </button>
                                 <button
                                     onClick={() => navigate('/register')}
-                                    className="w-full bg-cta text-white px-5 py-3 rounded-xl font-semibold hover:bg-cta-hover transition-colors shadow-lg shadow-cta/20"
+                                    className="block w-full text-center bg-emerald-glow text-void font-bold py-3 rounded-lg"
                                 >
                                     {t('registerBtn')}
                                 </button>

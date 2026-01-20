@@ -25,13 +25,13 @@ const ChatHeader = ({ isSidebarOpen, setIsSidebarOpen }: ChatHeaderProps) => {
     };
 
     return (
-        <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between px-4 lg:px-6 z-30 transition-colors duration-300">
+        <header className="h-16 bg-void/50 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-4 lg:px-6 z-30 transition-colors duration-300">
             {/* Left: Sidebar Toggle + Logo */}
             <div className="flex items-center gap-3">
                 {/* Sidebar Toggle Button */}
                 <button
                     onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 hover:scale-105"
+                    className="p-2 text-text-muted hover:bg-white/5 rounded-lg transition-all duration-200 hover:scale-105 hover:text-emerald-glow"
                     title={isSidebarOpen ? 'Сайдбарды жабу' : 'Сайдбарды ашу'}
                 >
                     <div className="transition-transform duration-300" style={{ transform: isSidebarOpen ? 'rotate(0deg)' : 'rotate(180deg)' }}>
@@ -46,16 +46,16 @@ const ChatHeader = ({ isSidebarOpen, setIsSidebarOpen }: ChatHeaderProps) => {
                 {/* Logo - Clickable, redirects to landing */}
                 <Link
                     to="/"
-                    className="text-xl font-bold bg-gradient-to-r from-hero-1 to-hero-2 bg-clip-text text-transparent hover:opacity-80 transition-opacity"
+                    className="text-xl font-bold font-heading text-text-main hover:opacity-80 transition-opacity"
                 >
-                    JauapAI
+                    Jauap<span className="text-emerald-glow">AI</span>
                 </Link>
             </div>
 
             {/* Right: Theme Toggle */}
             <button
                 onClick={toggleTheme}
-                className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-2 text-text-muted hover:bg-white/5 rounded-lg transition-colors hover:text-emerald-glow"
                 aria-label="Toggle theme"
             >
                 {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}

@@ -16,6 +16,10 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer"
     expires_in: int
 
+class GoogleAuthRequest(BaseModel):
+    """Request body for Google OAuth authentication."""
+    credential: str  # Google ID token from frontend
+
 class UserResponse(BaseModel):
     id: str
     email: str

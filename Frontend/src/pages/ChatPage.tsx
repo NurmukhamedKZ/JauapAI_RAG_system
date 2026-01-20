@@ -18,7 +18,7 @@ const ChatPage = () => {
     };
 
     return (
-        <div className="flex h-screen overflow-hidden bg-bg-light dark:bg-gray-950 font-sans">
+        <div className="flex h-screen overflow-hidden bg-void font-sans">
             {/* Sidebar */}
             <Sidebar
                 isOpen={isSidebarOpen}

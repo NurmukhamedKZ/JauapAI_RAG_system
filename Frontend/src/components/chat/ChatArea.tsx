@@ -6,6 +6,10 @@ import { conversationService } from '../../services/conversationService';
 import type { ChatFilters } from '../../services/conversationService';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import FilterBar from './FilterBar';
 import UpgradeModal from './UpgradeModal';
 
@@ -76,7 +80,60 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
 
         // Check if user is authenticated
         if (!isAuthenticated) {
-            setShowAuthModal(true);
+            // Check if guest has already used their free message
+            const hasUsedGuest = localStorage.getItem('jauap_guest_used');
+
+            if (hasUsedGuest) {
+                setShowAuthModal(true);
+                return;
+            }
+
+            // Guest Flow
+            const userMessage = input;
+            setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+            setInput('');
+            setIsLoading(true);
+
+            // Add placeholder for AI response
+            setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
+            try {
+                await conversationService.sendGuestMessage(
+                    userMessage,
+                    filters,
+                    (chunk) => {
+                        setMessages(prev => {
+                            const newMessages = [...prev];
+                            const lastIndex = newMessages.length - 1;
+                            newMessages[lastIndex] = {
+                                role: 'assistant',
+                                content: newMessages[lastIndex].content + chunk,
+                            };
+                            return newMessages;
+                        });
+                    }
+                );
+
+                // Mark guest usage as completed
+                localStorage.setItem('jauap_guest_used', 'true');
+
+                // Optional: You could show a message here or prompt registration after the answer
+                // For now, next attempt will trigger auth modal
+
+            } catch (error) {
+                console.error('Error sending guest message:', error);
+                setMessages(prev => {
+                    const newMessages = [...prev];
+                    const lastIndex = newMessages.length - 1;
+                    newMessages[lastIndex] = {
+                        role: 'assistant',
+                        content: 'Кешіріңіз, қате пайда болды. Қайталап көріңіз.',
+                    };
+                    return newMessages;
+                });
+            } finally {
+                setIsLoading(false);
+            }
             return;
         }
 
@@ -152,19 +209,19 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
     };
 
     return (
-        <div className="flex flex-col h-full bg-bg-light dark:bg-gray-950 transition-colors duration-300">
+        <div className="flex flex-col h-full bg-void transition-colors duration-300">
             {/* Messages Area - Centered */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 <div className="max-w-3xl mx-auto px-4 py-8">
                     {messages.length === 0 ? (
                         <div className="flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[60vh]">
-                            <div className="w-16 h-16 bg-hero-1/20 rounded-full flex items-center justify-center mb-6">
-                                <Bot className="w-8 h-8 text-hero-1" />
+                            <div className="w-20 h-20 bg-emerald-glow/10 border border-emerald-glow/20 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                                <Bot className="w-10 h-10 text-emerald-glow" />
                             </div>
-                            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+                            <h2 className="text-3xl font-bold font-heading text-text-main mb-4">
                                 {language === 'kk' ? 'Сәлем! Мен JauapAI' : 'Привет! Я JauapAI'}
                             </h2>
-                            <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                            <p className="text-text-muted max-w-md text-lg">
                                 {language === 'kk'
                                     ? 'ЕНТ дайындығына көмектесемін. Сұрағыңызды қойыңыз!'
                                     : 'Помогу с подготовкой к ЕНТ. Задайте ваш вопрос!'
@@ -178,28 +235,64 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                                     {msg.role === 'user' ? (
                                         // User message - right aligned bubble
                                         <div className="flex justify-end">
-                                            <div className="bg-hero-1 text-white px-4 py-3 rounded-2xl rounded-tr-sm max-w-[85%] text-[15px] leading-relaxed shadow-lg shadow-hero-1/20">
+                                            <div className="bg-emerald-glow text-void font-medium px-5 py-3 rounded-2xl rounded-tr-sm max-w-[85%] text-[15px] leading-relaxed shadow-[0_0_15px_rgba(16,185,129,0.2)]">
                                                 {msg.content}
                                             </div>
                                         </div>
                                     ) : (
                                         // Assistant message - left aligned
                                         <div className="flex gap-4">
-                                            <div className="w-8 h-8 rounded-full bg-hero-1 flex items-center justify-center flex-shrink-0 mt-1">
-                                                <Bot className="w-5 h-5 text-white" />
+                                            <div className="w-8 h-8 rounded-lg bg-emerald-deep border border-emerald-glow/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                                <Bot className="w-5 h-5 text-emerald-glow" />
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 {msg.content ? (
-                                                    <div className="text-gray-200 text-[15px] leading-relaxed whitespace-pre-wrap">
-                                                        {msg.content}
+                                                    <div className="text-text-main text-[15px] leading-relaxed glass-card p-4 rounded-2xl rounded-tl-sm border border-white/5 bg-surface/30">
+                                                        <ReactMarkdown
+                                                            remarkPlugins={[remarkGfm]}
+                                                            components={{
+                                                                code({ node, inline, className, children, ...props }: any) {
+                                                                    const match = /language-(\w+)/.exec(className || '');
+                                                                    return !inline && match ? (
+                                                                        <SyntaxHighlighter
+                                                                            style={oneDark}
+                                                                            language={match[1]}
+                                                                            PreTag="div"
+                                                                            className="rounded-lg !my-4 !bg-black/50 border border-white/10"
+                                                                            {...props}
+                                                                        >
+                                                                            {String(children).replace(/\n$/, '')}
+                                                                        </SyntaxHighlighter>
+                                                                    ) : (
+                                                                        <code className="bg-white/10 text-emerald-300 px-1.5 py-0.5 rounded text-sm font-mono" {...props}>
+                                                                            {children}
+                                                                        </code>
+                                                                    );
+                                                                },
+                                                                p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
+                                                                ul: ({ children }) => <ul className="list-disc list-outside ml-4 mb-4 space-y-1">{children}</ul>,
+                                                                ol: ({ children }) => <ol className="list-decimal list-outside ml-4 mb-4 space-y-1">{children}</ol>,
+                                                                li: ({ children }) => <li className="pl-1">{children}</li>,
+                                                                h1: ({ children }) => <h1 className="text-xl font-bold text-white mb-4 mt-2 font-heading">{children}</h1>,
+                                                                h2: ({ children }) => <h2 className="text-lg font-bold text-emerald-glow mb-3 mt-4 font-heading">{children}</h2>,
+                                                                h3: ({ children }) => <h3 className="text-md font-semibold text-white mb-2 mt-3 font-heading">{children}</h3>,
+                                                                blockquote: ({ children }) => <blockquote className="border-l-4 border-emerald-glow/50 pl-4 py-1 my-4 bg-emerald-glow/5 rounded-r italic">{children}</blockquote>,
+                                                                a: ({ children, href }) => <a href={href} className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">{children}</a>,
+                                                                table: ({ children }) => <div className="overflow-x-auto my-4 rounded-lg border border-white/10"><table className="min-w-full divide-y divide-white/10 bg-black/20">{children}</table></div>,
+                                                                th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-medium text-emerald-glow uppercase tracking-wider bg-white/5">{children}</th>,
+                                                                td: ({ children }) => <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap border-t border-white/5">{children}</td>,
+                                                            }}
+                                                        >
+                                                            {msg.content}
+                                                        </ReactMarkdown>
                                                     </div>
                                                 ) : isLoading && idx === messages.length - 1 ? (
-                                                    <div className="flex items-center gap-1 text-gray-400 text-sm">
+                                                    <div className="flex items-center gap-2 text-text-dim text-sm ml-2">
                                                         <span>{language === 'kk' ? 'Ойланып жатыр' : 'Думает'}</span>
-                                                        <span className="flex gap-0.5">
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                                                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                                                        <span className="flex gap-1">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-glow animate-bounce" style={{ animationDelay: '300ms' }}></span>
                                                         </span>
                                                     </div>
                                                 ) : null}
@@ -215,10 +308,10 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
             </div>
 
             {/* Input Area with Filters */}
-            <div className="p-4 pb-6">
+            <div className="p-4 pb-6 bg-void">
                 <div className="max-w-3xl mx-auto">
                     {/* Input Container */}
-                    <div className="bg-white dark:bg-gray-800 rounded-3xl p-4 shadow-xl border border-gray-200 dark:border-gray-700 transition-colors duration-300">
+                    <div className="bg-surface/50 backdrop-blur-md rounded-3xl p-4 shadow-lg border border-white/10 transition-colors duration-300 focus-within:border-emerald-glow/30 focus-within:ring-1 focus-within:ring-emerald-glow/30">
                         {/* Input */}
                         <textarea
                             value={input}
@@ -230,12 +323,12 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                                 }
                             }}
                             placeholder={language === 'kk' ? 'Сұрақ қойыңыз' : 'Задайте вопрос'}
-                            className="w-full bg-transparent border-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none focus:outline-none text-base transition-colors duration-300"
+                            className="w-full bg-transparent border-none text-text-main placeholder-text-dim resize-none focus:outline-none text-base transition-colors duration-300"
                             rows={2}
                         />
 
                         {/* Bottom Row: Filters + Send Button */}
-                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                        <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/5 transition-colors duration-300">
                             {/* Filter Pills */}
                             <FilterBar filters={filters} setFilters={setFilters} />
 
@@ -243,10 +336,10 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                             <button
                                 onClick={handleSend}
                                 disabled={!input.trim() || isLoading}
-                                className="p-2.5 bg-hero-1 text-white rounded-full hover:bg-hero-1/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-4 flex-shrink-0 shadow-lg shadow-hero-1/30"
+                                className="p-2.5 bg-emerald-glow text-void rounded-full hover:bg-emerald-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ml-4 flex-shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)] transform hover:scale-105 active:scale-95"
                             >
                                 {isLoading ? (
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    <div className="w-5 h-5 border-2 border-void border-t-transparent rounded-full animate-spin" />
                                 ) : (
                                     <Send className="w-5 h-5" />
                                 )}
@@ -255,7 +348,7 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                     </div>
 
                     {/* Disclaimer */}
-                    <p className="text-xs text-gray-500 text-center mt-3">
+                    <p className="text-xs text-text-dim text-center mt-3">
                         {language === 'kk'
                             ? 'JauapAI қате жіберуі мүмкін. Маңызды ақпаратты тексеріңіз.'
                             : 'JauapAI может допускать ошибки. Проверяйте важную информацию.'
@@ -281,7 +374,7 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="fixed inset-0 flex items-center justify-center z-50 p-4"
                         >
-                            <div className="bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-8 relative border border-gray-700">
+                            <div className="glass-card bg-surface/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full p-8 relative border border-white/10">
                                 <button
                                     onClick={() => setShowAuthModal(false)}
                                     className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white"

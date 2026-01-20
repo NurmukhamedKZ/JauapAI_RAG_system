@@ -93,6 +93,41 @@ export const conversationService = {
             onChunk(chunk);
         }
     },
+
+    // Send guest message (one-time use)
+    sendGuestMessage: async (
+        message: string,
+        filters: ChatFilters,
+        onChunk: (chunk: string) => void
+    ): Promise<void> => {
+        const response = await fetch(`${API_BASE_URL}/conversations/guest/messages`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message, filters }),
+        });
+
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+            throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+        }
+
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+
+        if (!reader) {
+            throw new Error('No response body');
+        }
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            onChunk(chunk);
+        }
+    },
 };
 
 // Filter options

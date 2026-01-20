@@ -7,6 +7,7 @@ interface AuthContextType {
     user: User | null;
     loading: boolean;
     login: (data: LoginRequest) => Promise<void>;
+    loginWithGoogle: (credential: string) => Promise<void>;
     register: (data: RegisterRequest) => Promise<void>;
     logout: () => void;
     refreshUser: () => Promise<void>;
@@ -76,6 +77,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setLoading(false);
     };
 
+    const loginWithGoogle = async (credential: string) => {
+        setLoading(true);
+        try {
+            await authService.loginWithGoogle(credential);
+            const currentUser = await authService.getCurrentUser();
+            setUser(currentUser);
+        } catch (error) {
+            setLoading(false);
+            throw error;
+        }
+        setLoading(false);
+    };
+
     const logout = () => {
         authService.logout();
         setUser(null);
@@ -94,6 +108,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         user,
         loading,
         login,
+        loginWithGoogle,
         register,
         logout,
         refreshUser,

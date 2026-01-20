@@ -83,24 +83,24 @@ const VoteModal = ({ isOpen, onClose }: VoteModalProps) => {
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
                         className="fixed inset-0 flex items-center justify-center z-50 p-4"
                     >
-                        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6 relative border border-gray-200 dark:border-gray-700">
+                        <div className="glass-card bg-surface/90 backdrop-blur-xl rounded-2xl shadow-2xl max-w-md w-full p-6 relative border border-white/10">
                             {/* Close Button */}
                             <button
                                 onClick={handleClose}
-                                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                                className="absolute top-4 right-4 p-2 text-text-dim hover:text-white transition-colors"
                             >
                                 <X className="w-5 h-5" />
                             </button>
 
                             {/* Header */}
                             <div className="text-center mb-6">
-                                <div className="w-14 h-14 bg-gradient-to-br from-hero-1 to-hero-2 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <div className="w-14 h-14 bg-gradient-to-br from-emerald-deep to-emerald-glow rounded-full flex items-center justify-center mx-auto mb-4 border border-white/10 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                                     <Sparkles className="w-7 h-7 text-white" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                                <h3 className="text-xl font-bold text-text-main mb-2 font-heading">
                                     {language === 'kk' ? 'Жаңа пән келе жатыр!' : 'Скоро новый предмет!'}
                                 </h3>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                                <p className="text-text-dim text-sm">
                                     {language === 'kk'
                                         ? 'Қай пәнді бірінші қосқанымызды білгіңіз келе ме? Дауыс беріңіз!'
                                         : 'Хотите решить, какой предмет добавим первым? Проголосуйте!'
@@ -115,26 +115,26 @@ const VoteModal = ({ isOpen, onClose }: VoteModalProps) => {
                                         key={subject}
                                         onClick={() => handleVote(subject)}
                                         disabled={isVoting || voted !== null}
-                                        className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all ${voted === subject
-                                            ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                                            : 'border-gray-200 dark:border-gray-600 hover:border-hero-1 hover:bg-hero-1/5'
+                                        className={`w-full flex items-center justify-between p-4 rounded-xl border transition-all ${voted === subject
+                                            ? 'border-emerald-glow bg-emerald-glow/10'
+                                            : 'border-white/5 bg-surface/30 hover:border-emerald-glow/50 hover:bg-white/5'
                                             } ${(isVoting || voted !== null) && voted !== subject ? 'opacity-50' : ''}`}
                                     >
                                         <div className="flex items-center gap-3">
                                             <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${subjectColors[subject]} flex items-center justify-center text-white`}>
                                                 {subjectIcons[subject]}
                                             </div>
-                                            <span className="font-medium text-gray-900 dark:text-white">
+                                            <span className="font-medium text-text-main">
                                                 {subject}
                                             </span>
                                         </div>
 
                                         {isVoting && voted === null ? (
-                                            <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+                                            <Loader2 className="w-5 h-5 text-text-dim animate-spin" />
                                         ) : voted === subject ? (
-                                            <Check className="w-5 h-5 text-green-500" />
+                                            <Check className="w-5 h-5 text-emerald-glow" />
                                         ) : (
-                                            <Vote className="w-5 h-5 text-gray-400" />
+                                            <Vote className="w-5 h-5 text-text-dim group-hover:text-emerald-glow" />
                                         )}
                                     </button>
                                 ))}
@@ -145,9 +145,9 @@ const VoteModal = ({ isOpen, onClose }: VoteModalProps) => {
                                 <motion.div
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className={`text-center p-3 rounded-lg ${voted
-                                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                                        : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300'
+                                    className={`text-center p-3 rounded-lg text-sm border ${voted
+                                        ? 'bg-emerald-glow/10 text-emerald-glow border-emerald-glow/20'
+                                        : 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'
                                         }`}
                                 >
                                     {voteMessage}
@@ -155,7 +155,7 @@ const VoteModal = ({ isOpen, onClose }: VoteModalProps) => {
                             )}
 
                             {/* Footer */}
-                            <p className="text-xs text-gray-400 text-center mt-4">
+                            <p className="text-xs text-text-dim/50 text-center mt-4">
                                 {language === 'kk'
                                     ? 'Бұл пәндер әлі қосылмаған. Сіздің дауысыңыз маңызды!'
                                     : 'Эти предметы ещё не добавлены. Ваш голос важен!'

@@ -99,6 +99,50 @@ def delete_conversation(
     return {"message": "Conversation deleted"}
 
 
+@router.post("/guest/messages")
+async def send_guest_message(
+    request: Request,
+    data: MessageCreate,
+    db: Session = Depends(get_db),
+):
+    """
+    Send a message as a guest (one-time use).
+    Does not save conversation to DB and returns streaming response directly.
+    """
+    # Get RAG service
+    rag_service = getattr(request.app.state, "rag_service", None)
+    if not rag_service:
+        raise HTTPException(status_code=500, detail="RAG Service not initialized")
+    
+    # Prepare filters for RAG
+    filters = {}
+    if data.filters:
+        for key in ["discipline", "grade", "publisher"]:
+            if data.filters.get(key):
+                filters[key] = data.filters[key]
+    
+    # Generate and stream response
+    async def generate():
+        try:
+            # Guest chat has no history context
+            for chunk in rag_service.stream_chat_with_context(
+                [],  # Empty context messages
+                data.message, 
+                filters
+            ):
+                if isinstance(chunk, dict):
+                    text = chunk.get("response", "")
+                else:
+                    text = str(chunk)
+                yield text
+        except Exception as e:
+            error_msg = f"Error generating response: {str(e)}"
+            logger.error(error_msg)
+            yield error_msg
+            
+    return StreamingResponse(generate(), media_type="text/plain")
+
+
 @router.post("/{conversation_id}/messages")
 async def send_message(
     conversation_id: UUID,

@@ -11,9 +11,12 @@ import ChatPage from './pages/ChatPage';
 import AuthCallbackPage from './pages/AuthCallbackPage';
 
 import { HelmetProvider } from 'react-helmet-async';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 function App() {
-  return (
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+
+  const AppContent = (
     <HelmetProvider>
       <LanguageProvider>
         <AuthProvider>
@@ -30,6 +33,17 @@ function App() {
       </LanguageProvider>
     </HelmetProvider>
   );
+
+  // Only wrap with GoogleOAuthProvider if clientId is available
+  if (googleClientId) {
+    return (
+      <GoogleOAuthProvider clientId={googleClientId}>
+        {AppContent}
+      </GoogleOAuthProvider>
+    );
+  }
+
+  return AppContent;
 }
 
 export default App;
