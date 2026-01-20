@@ -31,8 +31,12 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     logger.info("Creating database tables...")
-    Base.metadata.create_all(bind=engine)
-    logger.info("Database tables created.")
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Database tables created.")
+    except Exception as e:
+        logger.error(f"Failed to create database tables: {e}")
+        logger.warning("Application starting without database - some features may be unavailable")
     
     logger.info("Initializing RAG Service...")
     try:
