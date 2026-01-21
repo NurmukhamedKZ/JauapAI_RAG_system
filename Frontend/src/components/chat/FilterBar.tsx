@@ -128,7 +128,7 @@ const FilterBar = ({ filters, setFilters }: FilterBarProps) => {
             // History: grades 6-11
             return [
                 allOption,
-                ...['6', '7', '8', '9', '10', '11'].map(g => ({
+                ...['6 сынып', '7 сынып', '8 сынып', '9 сынып', '10 сынып', '11 сынып'].map(g => ({
                     value: g,
                     label: `${g} ${t('gradeLabel')}`
                 }))
@@ -137,7 +137,7 @@ const FilterBar = ({ filters, setFilters }: FilterBarProps) => {
             // Informatics: grades 7-11
             return [
                 allOption,
-                ...['7', '8', '9', '10', '11'].map(g => ({
+                ...['7 сынып', '8 сынып', '9 сынып', '10 сынып', '11 сынып'].map(g => ({
                     value: g,
                     label: `${g} ${t('gradeLabel')}`
                 }))
