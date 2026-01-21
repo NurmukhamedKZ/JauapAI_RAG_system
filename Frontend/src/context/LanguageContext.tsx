@@ -197,7 +197,7 @@ const translations: Record<Language, Record<string, string>> = {
 
         // Testimonials
         'testimonials.title': 'Оқушылардың пікірлері',
-        'testimonials.item1.text': 'JauapAI арқасында тарихтан 15 балдан 35 балға көтерілдім! Түсіндірмелері өте түсінікті.',
+        'testimonials.item1.text': 'JauapAI арқасында тарихтан 12 балдан 20 балға көтерілдім! Түсіндірмелері өте түсінікті.',
         'testimonials.item1.author': 'Алихан, 11 сынып',
         'testimonials.item2.text': 'Математикадан қиын есептерді суретке түсіріп жіберемін, бірден шешімін аламын. Өте ыңғайлы.',
         'testimonials.item2.author': 'Аружан, 10 сынып',

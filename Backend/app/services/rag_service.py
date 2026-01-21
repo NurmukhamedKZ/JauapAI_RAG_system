@@ -232,7 +232,7 @@ class RAGService:
         context_messages = input_dict.get("context_messages", [])
         question = input_dict["question"]
         context_data = input_dict["context_data"]
-        print(context_data)
+        # print(context_data)
         
         prompt = f"""
 Сен Қазақстандағы ҰБТ (Бірыңғай ұлттық тестілеу) бойынша репетиторсын, оқушыларды күрделі ЕНТ-ға дайындауға маманданғансын.

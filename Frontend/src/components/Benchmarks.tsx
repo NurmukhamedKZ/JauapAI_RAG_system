@@ -12,10 +12,10 @@ const Benchmarks = () => {
     const isInView = useInView(ref, { once: true, margin: "-100px" });
 
     const benchmarkData = [
-        { label: t('benchmarks.subjects.math'), score: 128, color: 'bg-emerald-500' },
-        { label: t('benchmarks.subjects.history'), score: 125, color: 'bg-teal-400' },
-        { label: t('benchmarks.subjects.reading'), score: 122, color: 'bg-emerald-300' },
-        { label: t('benchmarks.subjects.informatics'), score: 118, color: 'bg-slate-500' },
+        { label: t('benchmarks.subjects.math'), score: 48, color: 'bg-emerald-500' },
+        { label: t('benchmarks.subjects.history'), score: 20, color: 'bg-teal-400' },
+        { label: t('benchmarks.subjects.reading'), score: 10, color: 'bg-emerald-300' },
+        { label: t('benchmarks.subjects.informatics'), score: 47, color: 'bg-slate-500' },
     ];
 
     return (
@@ -58,7 +58,7 @@ const Benchmarks = () => {
                                 <div className="h-3 bg-surface rounded-full overflow-hidden border border-white/5">
                                     <motion.div
                                         initial={{ width: 0 }}
-                                        animate={isInView ? { width: `${(item.score / 140) * 100}%` } : { width: 0 }}
+                                        animate={isInView ? { width: `${(item.score / 50) * 100}%` } : { width: 0 }}
                                         transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.2 }}
                                         className={`h-full rounded-full ${item.color} shadow-[0_0_10px_rgba(16,185,129,0.3)]`}
                                     ></motion.div>

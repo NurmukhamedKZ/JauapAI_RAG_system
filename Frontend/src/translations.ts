@@ -308,7 +308,7 @@ export const translations = {
                 math: 'Мат. Грамотность',
                 history: 'История Казахстана',
                 reading: 'Грамотность Чтения',
-                biology: 'Биология',
+                biology: 'Физика',
             }
         },
         cta: {
