@@ -42,18 +42,18 @@ const ChatArea = ({ conversationId, onConversationCreated }: ChatAreaProps) => {
                 </code>
             );
         },
-        p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
-        ul: ({ children }) => <ul className="list-disc list-outside ml-4 mb-4 space-y-1">{children}</ul>,
-        ol: ({ children }) => <ol className="list-decimal list-outside ml-4 mb-4 space-y-1">{children}</ol>,
-        li: ({ children }) => <li className="pl-1">{children}</li>,
-        h1: ({ children }) => <h1 className="text-xl font-bold text-white mb-4 mt-2 font-heading">{children}</h1>,
-        h2: ({ children }) => <h2 className="text-lg font-bold text-emerald-glow mb-3 mt-4 font-heading">{children}</h2>,
-        h3: ({ children }) => <h3 className="text-md font-semibold text-white mb-2 mt-3 font-heading">{children}</h3>,
-        blockquote: ({ children }) => <blockquote className="border-l-4 border-emerald-glow/50 pl-4 py-1 my-4 bg-emerald-glow/5 rounded-r italic">{children}</blockquote>,
-        a: ({ children, href }) => <a href={href} className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">{children}</a>,
-        table: ({ children }) => <div className="overflow-x-auto my-4 rounded-lg border border-white/10"><table className="min-w-full divide-y divide-white/10 bg-black/20">{children}</table></div>,
-        th: ({ children }) => <th className="px-4 py-3 text-left text-xs font-medium text-emerald-glow uppercase tracking-wider bg-white/5">{children}</th>,
-        td: ({ children }) => <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap border-t border-white/5">{children}</td>,
+        p: ({ children }: any) => <p className="mb-4 last:mb-0">{children}</p>,
+        ul: ({ children }: any) => <ul className="list-disc list-outside ml-4 mb-4 space-y-1">{children}</ul>,
+        ol: ({ children }: any) => <ol className="list-decimal list-outside ml-4 mb-4 space-y-1">{children}</ol>,
+        li: ({ children }: any) => <li className="pl-1">{children}</li>,
+        h1: ({ children }: any) => <h1 className="text-xl font-bold text-white mb-4 mt-2 font-heading">{children}</h1>,
+        h2: ({ children }: any) => <h2 className="text-lg font-bold text-emerald-glow mb-3 mt-4 font-heading">{children}</h2>,
+        h3: ({ children }: any) => <h3 className="text-md font-semibold text-white mb-2 mt-3 font-heading">{children}</h3>,
+        blockquote: ({ children }: any) => <blockquote className="border-l-4 border-emerald-glow/50 pl-4 py-1 my-4 bg-emerald-glow/5 rounded-r italic">{children}</blockquote>,
+        a: ({ children, href }: any) => <a href={href} className="text-emerald-400 hover:text-emerald-300 underline underline-offset-2 transition-colors" target="_blank" rel="noopener noreferrer">{children}</a>,
+        table: ({ children }: any) => <div className="overflow-x-auto my-4 rounded-lg border border-white/10"><table className="min-w-full divide-y divide-white/10 bg-black/20">{children}</table></div>,
+        th: ({ children }: any) => <th className="px-4 py-3 text-left text-xs font-medium text-emerald-glow uppercase tracking-wider bg-white/5">{children}</th>,
+        td: ({ children }: any) => <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap border-t border-white/5">{children}</td>,
     }), []);
 
     const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
