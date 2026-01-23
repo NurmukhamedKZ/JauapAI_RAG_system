@@ -54,20 +54,16 @@ export const translations = {
             title: 'Why JauapAI',
             title_accent: 'works',
             subtitle: 'The only tool you need to master the UNT.',
-            items: [
-                { title: 'All Textbooks in One Chat', desc: 'Access every page of every official Grade 5-11 textbook instantly. No more searching.' },
-                { title: 'Answers You Can Trust', desc: '100% verified by official sources. We only use approved content, so you get the right answers.' },
-                { title: 'Study in Your Language', desc: 'Think in Kazakh? Study in Kazakh. Switch between languages instantly to understand every detail.' }
-            ]
+            item1: { title: 'All Textbooks in One Chat', desc: 'Access every page of every official Grade 5-11 textbook instantly. No more searching.' },
+            item2: { title: 'Answers You Can Trust', desc: '100% verified by official sources. We only use approved content, so you get the right answers.' },
+            item3: { title: 'Study in Your Language', desc: 'Think in Kazakh? Study in Kazakh. Switch between languages instantly to understand every detail.' }
         },
         howItWorks: {
             title: '3 Steps to',
             title_accent: 'Success',
-            steps: [
-                { title: 'Ask Any Question', desc: 'Select your subject and ask about any topic you find difficult.' },
-                { title: 'Get Verified Answers', desc: 'Our AI finds the exact explanation from official textbooks in seconds.' },
-                { title: 'Master the Exam', desc: 'Understand the logic, close your knowledge gaps, and boost your score.' }
-            ]
+            step1: { title: 'Ask Any Question', desc: 'Select your subject and ask about any topic you find difficult.' },
+            step2: { title: 'Get Verified Answers', desc: 'Our AI finds the exact explanation from official textbooks in seconds.' },
+            step3: { title: 'Master the Exam', desc: 'Understand the logic, close your knowledge gaps, and boost your score.' }
         },
         benchmarks: {
             title: 'Proven performance across',
@@ -167,20 +163,16 @@ export const translations = {
             title: 'Неге JauapAI',
             title_accent: 'тиімді',
             subtitle: 'ҰБТ-ны меңгеру үшін қажет жалғыз құрал.',
-            items: [
-                { title: 'Барлық оқулықтар бір чатта', desc: '5-11 сыныптың барлық ресми оқулықтарына лезде қол жеткіз. Іздеудің қажеті жоқ.' },
-                { title: 'Сенімді жауаптар', desc: 'Ресми дереккөздермен 100% тексерілген. Біз тек бекітілген мазмұнды қолданамыз.' },
-                { title: 'Өз тіліңде оқы', desc: 'Орысша ойлайсың ба? Орысша оқы. Әр детальді түсіну үшін тілді лезде ауыстыр.' }
-            ]
+            item1: { title: 'Барлық оқулықтар бір чатта', desc: '5-11 сыныптың барлық ресми оқулықтарына лезде қол жеткіз. Іздеудің қажеті жоқ.' },
+            item2: { title: 'Сенімді жауаптар', desc: 'Ресми дереккөздермен 100% тексерілген. Біз тек бекітілген мазмұнды қолданамыз.' },
+            item3: { title: 'Өз тіліңде оқы', desc: 'Орысша ойлайсың ба? Орысша оқы. Әр детальді түсіну үшін тілді лезде ауыстыр.' }
         },
         howItWorks: {
             title: 'Жетістікке жетудің',
             title_accent: '3 қадамы',
-            steps: [
-                { title: 'Сұрақ қой', desc: 'Пәнді таңдап, түсінбей жүрген кез келген тақырыпты сұра.' },
-                { title: 'Тексерілген жауап ал', desc: 'Біздің AI ресми оқулықтардан нақты түсіндірмені секундтарда табады.' },
-                { title: 'ҰБТ-ны сәтті тапсыр', desc: 'Логиканы түсініп, білімдегі олқылықтарды жой және ұпайыңды көтер.' }
-            ]
+            step1: { title: 'Сұрақ қой', desc: 'Пәнді таңдап, түсінбей жүрген кез келген тақырыпты сұра.' },
+            step2: { title: 'Тексерілген жауап ал', desc: 'Біздің AI ресми оқулықтардан нақты түсіндірмені секундтарда табады.' },
+            step3: { title: 'ҰБТ-ны сәтті тапсыр', desc: 'Логиканы түсініп, білімдегі олқылықтарды жой және ұпайыңды көтер.' }
         },
         benchmarks: {
             title: 'Көрсеткіштер бойынша',
@@ -241,10 +233,10 @@ export const translations = {
             description: 'Подготовься к ЕНТ с JauapAI. Мгновенные ответы из официальных учебников, персональные тесты и объяснения задач. Начни бесплатно.',
         },
         hero: {
-            title_start: 'Твой короткий путь',
-            title_end: 'к гранту',
-            subtitle: 'Перестань тратить время на поиск в десятках учебников. JauapAI мгновенно находит точный ответ из официальных книг ЕНТ.',
-            cta_primary: 'Начать — Бесплатно',
+            title_start: 'Гарантируй себе Грант',
+            title_end: 'с личным ИИ-репетитором',
+            subtitle: 'Забудь о бесконечном поиске ответов в учебниках. JauapAI знает содержание всех книг для ЕНТ и дает мгновенные, проверенные ответы.',
+            cta_primary: 'Попробовать бесплатно',
             cta_secondary: 'Попробовать демо',
             stats_papers: 'Все официальные учебники',
             stats_logic: 'Мгновенные ответы',
@@ -262,8 +254,8 @@ export const translations = {
             }
         },
         features: {
-            personalized: { title: 'Персонализация', desc: 'ИИ мгновенно адаптируется к твоим слабым местам.' },
-            tests: { title: 'Формат Екзамена', desc: 'Практика с реальным таймингом и форматами.' },
+            personalized: { title: 'ЕНТ — это не страшно', desc: 'Убери стресс и страх не поступить. Готовься спокойно и уверенно.' },
+            tests: { title: 'Формат Экзамена', desc: 'Практика с реальным таймингом и форматами.' },
             tracking: { title: 'Отслеживание Прогресса', desc: 'Визуальная аналитика роста твоих баллов.' },
             expert: { title: 'Объяснения эксперта', desc: 'Получайте полные объяснения к любой ошибке или сложному вопросу.' },
         },
@@ -277,23 +269,19 @@ export const translations = {
             item3: { text: "Идеально для быстрого повторения перед тестом.", author: "Диана, 11 класс" }
         },
         core: {
-            title: 'Почему JauapAI',
-            title_accent: 'работает',
-            subtitle: 'Единственный инструмент, который нужен для сдачи ЕНТ.',
-            items: [
-                { title: 'Все учебники в одном чате', desc: 'Доступ к каждой странице каждого официального учебника 5-11 классов. Больше никаких поисков.' },
-                { title: 'Ответы, которым можно доверять', desc: '100% проверено по официальным источникам. Мы используем только утвержденный контент.' },
-                { title: 'Учись на своем языке', desc: 'Думаешь на казахском? Учись на казахском. Мгновенно переключайся между языками.' }
-            ]
+            title: 'Мы понимаем, как',
+            title_accent: 'сложно',
+            subtitle: 'готовиться в одиночку. Поэтому мы создали систему, которой доверяют тысячи школьников.',
+            item1: { title: 'Забудь о сомнениях', desc: 'Больше не нужно гадать, правильный ли ответ в интернете. Мы используем только официальные источники.' },
+            item2: { title: 'Экономь время', desc: 'Доступ к каждой странице учебников 5-11 классов мгновенно. Не трать часы на поиск.' },
+            item3: { title: 'Учись на своем языке', desc: 'Думаешь на казахском? Учись на казахском. Мгновенно переключайся между языками.' }
         },
         howItWorks: {
-            title: '3 шага к',
-            title_accent: 'успеху',
-            steps: [
-                { title: 'Задай любой вопрос', desc: 'Выбери предмет и спроси о любой теме, которая вызывает трудности.' },
-                { title: 'Получи проверенный ответ', desc: 'Наш ИИ находит точное объяснение из официальных учебников за секунды.' },
-                { title: 'Сдай ЕНТ на отлично', desc: 'Пойми логику, закрой пробелы в знаниях и повысь свой балл.' }
-            ]
+            title: '3 простых шага к',
+            title_accent: 'Гранту',
+            step1: { title: 'Задай вопрос', desc: 'Спроси что угодно по школьной программе, что вызывает трудности.' },
+            step2: { title: 'Получи точный ответ', desc: 'ИИ мгновенно найдет объяснение в официальном учебнике.' },
+            step3: { title: 'Сдай ЕНТ на отлично', desc: 'Будь уверен в своих знаниях, набери высокий балл и поступи на грант.' }
         },
         benchmarks: {
             title: 'Доказанная эффективность в',
@@ -312,10 +300,10 @@ export const translations = {
             }
         },
         cta: {
-            title: 'Готов сдать ЕНТ на отлично?',
-            subtitle: 'Присоединяйся к тысячам учеников. Начни свой персональный путь обучения сейчас.',
+            title: 'Хватит переживать за ЕНТ',
+            subtitle: 'Начни готовиться с JauapAI и будь уверен в своем гранте.',
             placeholder: 'Введите ваш email',
-            button: 'Начать Сейчас',
+            button: 'Начать подготовку бесплатно',
             disclaimer: 'Карта не требуется. 7 дней бесплатно.'
         },
         footer: {
